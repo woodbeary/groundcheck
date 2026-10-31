@@ -1,0 +1,24 @@
+{
+  "name": "lending-checks",
+  "version": "0.1.0",
+  "description": "Three-valued lien and DSCR checks over cited loan documents. A value counts only if a current document backs it.",
+  "license": "MIT",
+  "author": "Jacob Lopez",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "lienstack": "node src/cli.ts lienstack",
+    "dscr": "node src/cli.ts dscr",
+    "eval": "node src/cli.ts eval"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "typescript": "5.9.3"
+  },
+  "packageManager": "pnpm@10.28.0"
+}

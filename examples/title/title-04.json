@@ -1,0 +1,63 @@
+{
+  "id": "title-04",
+  "synthetic": true,
+  "note": "Printed page 3 of 3 never arrived. Nothing it might hold can be ruled out.",
+  "request": {
+    "asOf": "2026-10-31",
+    "homeValue": {
+      "lo": 700000,
+      "hi": 700000
+    },
+    "amount": {
+      "lo": 100000,
+      "hi": 100000
+    },
+    "maxCltv": 80
+  },
+  "docs": [
+    {
+      "id": "prelim",
+      "pages": [
+        {
+          "n": 1,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "PRELIMINARY REPORT    Order No. SYN-TTL-0404",
+            "Property: 400 Fixture Way, Sampletown, CA 90000",
+            "Effective Date: October 9, 2026 at 7:30 a.m.",
+            "Vested in: Pat Sample and Lee Sample, as joint tenants",
+            "Page 1 of 3"
+          ]
+        },
+        {
+          "n": 2,
+          "lines": [
+            "PRELIMINARY REPORT    Order No. SYN-TTL-0404    SCHEDULE B",
+            "1. Property taxes for the fiscal year 2026-2027, a lien not yet due or payable.",
+            "2. Easement for public utilities, recorded June 2, 1987 as Instrument No. 1987-0042210.",
+            "3. A Deed of Trust to secure an indebtedness in the amount of $412,000.00, recorded March 3, 2021 as Instrument No. 2021-0123456. Beneficiary: Quillfeather Home Loans LLC.",
+            "Page 2 of 3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "first-statement",
+      "pages": [
+        {
+          "n": 4,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "MORTGAGE STATEMENT",
+            "Servicer: Quillfeather Home Loans LLC",
+            "Loan No. SYN-LN-0101",
+            "Statement Date: October 15, 2026",
+            "Original Principal: $412,000.00",
+            "Unpaid Principal Balance: $371,218.40",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    }
+  ]
+}
