@@ -162,6 +162,22 @@ describe("lienstack rules on printed text", () => {
     assert.match(r.checks[0]!.because, /item 4 was not read/);
   });
 
+  it("won't let one item borrow another item's recording date", () => {
+    const borrows: TitleReader = (docs) => {
+      const reading = readTitle(docs);
+      return {
+        ...reading,
+        reports: reading.reports.map((rep) => {
+          const easement = rep.items.find((item) => item.number === 2)!;
+          return { ...rep, items: rep.items.map((item) => (item.number === 3 ? { ...item, recorded: { ...easement.recorded!, value: "1987-06-02" } } : item)) };
+        }),
+      };
+    };
+    const r = lienstack(title("title-01"), borrows);
+    assert.equal(r.problems.find((p) => p.field === "item 2 recorded" && p.status === "unsupported")?.reason, "the quote is not from the item it describes");
+    assert.equal(status(r, "first-seasoned"), "unknown");
+  });
+
   it("ties a statement to a lien only by its recorded amount, and holds a balance above it", () => {
     const other = lienstack(edit(title("title-01"), "Original Principal: $412,000.00", "Original Principal: $415,000.00"));
     assert.equal(other.cltv.hi, Infinity);

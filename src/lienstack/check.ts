@@ -66,14 +66,31 @@ interface TitleState {
   readonly because: string;
 }
 
-function gateItem(docs: readonly Doc[], reading: ItemReading): Item {
+const LABELS = {
+  recorded: { name: "recording", pattern: /\brecorded\b/i },
+  instrument: { name: "instrument number", pattern: /Instrument No/i },
+  amount: { name: "amount", pattern: /amount of|\bfor\s+\$/i },
+  holder: { name: "beneficiary or creditor", pattern: /Beneficiary|Creditor|Lender/i },
+  effective: { name: "effective date", pattern: /Effective Date/i },
+  statementDate: { name: "statement date", pattern: /Statement Date/i },
+  original: { name: "original principal or credit limit", pattern: /Original Principal|Credit Limit/i },
+  balance: { name: "principal balance", pattern: /Principal Balance/i },
+} as const;
+
+/**
+ * Every field of an item must be quoted from that item's own numbered line in the same report,
+ * and the line must start with the item's number.
+ */
+function gateItem(docs: readonly Doc[], doc: string, reading: ItemReading): Item {
+  const line = { name: `item ${reading.number}`, pattern: new RegExp(`^${reading.number}\\.\\s`) };
+  const item = { doc, page: reading.kind.cite.page, within: reading.kind.cite.span };
   return {
     number: reading.number,
-    kind: checkLabel(docs, reading.kind, kindOf),
-    ...(reading.recorded ? { recorded: checkDate(docs, reading.recorded) } : {}),
-    ...(reading.instrument ? { instrument: checkText(docs, reading.instrument) } : {}),
-    ...(reading.amount ? { amount: checkMoney(docs, reading.amount) } : {}),
-    ...(reading.holder ? { holder: checkText(docs, reading.holder) } : {}),
+    kind: checkLabel(docs, reading.kind, kindOf, { doc, label: line }),
+    ...(reading.recorded ? { recorded: checkDate(docs, reading.recorded, { ...item, label: LABELS.recorded }) } : {}),
+    ...(reading.instrument ? { instrument: checkText(docs, reading.instrument, { ...item, label: LABELS.instrument }) } : {}),
+    ...(reading.amount ? { amount: checkMoney(docs, reading.amount, { ...item, label: LABELS.amount }) } : {}),
+    ...(reading.holder ? { holder: checkText(docs, reading.holder, { ...item, label: LABELS.holder }) } : {}),
   };
 }
 
@@ -91,7 +108,10 @@ function titleState(docs: readonly Doc[], reading: TitleReading, request: LienRe
   const none = (because: string, superseded: string[] = []): TitleState => ({ report: null, effective: null, superseded, decided: false, complete: false, because });
   if (reading.reports.length === 0) return none("no title report in the file");
 
-  const dated = reading.reports.map((report) => ({ report, effective: report.effective ? checkDate(docs, report.effective) : undefined }));
+  const dated = reading.reports.map((report) => ({
+    report,
+    effective: report.effective ? checkDate(docs, report.effective, { doc: report.doc, label: LABELS.effective }) : undefined,
+  }));
   const undated = dated.find((d) => backed(d.effective) === null);
   if (undated) {
     const why = undated.effective ? undated.effective.reason : "no effective date is on any page in the file";
@@ -114,7 +134,7 @@ function titleState(docs: readonly Doc[], reading: TitleReading, request: LienRe
   const doc = docs.find((d) => d.id === newest.report.doc)!;
   const whole = wholeness(doc);
   if (!whole.whole) return { ...base, decided: true, complete: false, because: whole.reason };
-  const read = new Set(newest.report.items.map((item) => gateItem(docs, item)).filter((item) => item.kind.status === "supported").map((item) => item.number));
+  const read = new Set(newest.report.items.map((item) => gateItem(docs, newest.report.doc, item)).filter((item) => item.kind.status === "supported").map((item) => item.number));
   const printed = printedItems(doc);
   const top = Math.max(0, ...printed);
   const unread = Array.from({ length: top }, (_, i) => i + 1).filter((n) => !read.has(n));
@@ -131,9 +151,9 @@ interface StatementFact {
 
 function currentStatements(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy, problems: Problem[]): StatementFact[] {
   return reading.statements.flatMap((s) => {
-    const date = s.date ? checkDate(docs, s.date) : undefined;
-    const original = s.original ? checkMoney(docs, s.original) : undefined;
-    const balance = s.balance ? checkMoney(docs, s.balance) : undefined;
+    const date = s.date ? checkDate(docs, s.date, { doc: s.doc, label: LABELS.statementDate }) : undefined;
+    const original = s.original ? checkMoney(docs, s.original, { doc: s.doc, label: LABELS.original }) : undefined;
+    const balance = s.balance ? checkMoney(docs, s.balance, { doc: s.doc, label: LABELS.balance }) : undefined;
     for (const c of [date, original, balance]) note(problems, c);
     const d = backed(date);
     const o = backed(original);
@@ -201,7 +221,8 @@ function absent(title: TitleState, liens: readonly Lien[], bad: (l: Lien) => boo
 export function checkTitle(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy, file = "file"): LienReport {
   const problems: Problem[] = [];
   const title = titleState(docs, reading, request, policy);
-  const items = title.report ? title.report.items.map((r) => gateItem(docs, r)) : [];
+  const report = title.report;
+  const items = report ? report.items.map((r) => gateItem(docs, report.doc, r)) : [];
   for (const item of items) for (const c of [item.kind, item.recorded, item.instrument, item.amount, item.holder]) note(problems, c);
   const statements = currentStatements(docs, reading, request, policy, problems);
 

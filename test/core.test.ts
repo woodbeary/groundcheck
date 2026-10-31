@@ -102,6 +102,16 @@ describe("citation gate", () => {
     assert.equal(checkText(docs, { field: "who", value: "Pat Sample", cite: cite(2, "Monthly Rent") }).status, "unsupported");
   });
 
+  it("rejects a printed value quoted from the wrong document, page or line", () => {
+    const rent = { field: "rent", value: 2450, cite: cite(2, "Monthly Rent: $2,450.00") };
+    const label = { name: "market rent", pattern: /market rent/i };
+    assert.equal(checkMoney(docs, rent, { label }).status, "unsupported");
+    assert.equal(checkMoney(docs, rent, { doc: "lease" }).status, "unsupported");
+    assert.equal(checkMoney(docs, rent, { page: 1 }).status, "unsupported");
+    assert.equal(checkMoney(docs, rent, { within: "Term: 360 months" }).status, "unsupported");
+    assert.equal(checkMoney(docs, rent, { doc: "d", page: 2, label: { name: "monthly rent", pattern: /monthly rent/i } }).status, "supported");
+  });
+
   it("lets code, not the reader, decide a label", () => {
     const labelOf = (span: string) => (span.includes("Rent") ? "rent" : "other");
     assert.equal(checkLabel(docs, { field: "k", value: "rent", cite: cite(2, "Monthly Rent") }, labelOf).status, "supported");

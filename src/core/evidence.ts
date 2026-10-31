@@ -59,8 +59,21 @@ function verdict<T>(claim: Claim<T>, status: Status, reason?: string): Checked<T
   return reason === undefined ? { ...claim, status } : { ...claim, status, reason };
 }
 
-/** The cited span, if it is printed on the cited page; otherwise why not. */
-function locate(docs: readonly Doc[], cite: Cite): { span: string } | { missing: string } {
+/**
+ * Where a value has to come from. Printing the number somewhere isn't enough: the quote must sit
+ * in the right document, on the line that labels this field, inside the item it belongs to.
+ */
+export interface Expect {
+  readonly doc?: string;
+  readonly page?: number;
+  readonly label?: { readonly name: string; readonly pattern: RegExp };
+  readonly within?: string;
+}
+
+/** The cited span, if it is printed on the cited page where it is expected; otherwise why not. */
+function locate(docs: readonly Doc[], cite: Cite, expect: Expect): { span: string } | { missing: string } {
+  if (expect.doc !== undefined && cite.doc !== expect.doc) return { missing: `cites "${cite.doc}", not "${expect.doc}"` };
+  if (expect.page !== undefined && cite.page !== expect.page) return { missing: `cites page ${cite.page}, not page ${expect.page}` };
   const doc = docs.find((d) => d.id === cite.doc);
   if (!doc) return { missing: `no document "${cite.doc}" in the file` };
   const page = doc.pages.find((p) => p.n === cite.page);
@@ -68,6 +81,8 @@ function locate(docs: readonly Doc[], cite: Cite): { span: string } | { missing:
   const span = squash(cite.span);
   if (!span) return { missing: "the citation quotes no text" };
   if (!squash(page.text).includes(span)) return { missing: `the quoted text is not on page ${cite.page}` };
+  if (expect.label && !expect.label.pattern.test(span)) return { missing: `the quoted text is not a ${expect.label.name} line` };
+  if (expect.within !== undefined && !squash(expect.within).includes(span)) return { missing: "the quote is not from the item it describes" };
   return { span };
 }
 
@@ -112,8 +127,8 @@ export function percentTokens(text: string): Token[] {
 
 const cents = (x: number) => Math.round(x * 100);
 
-function checkNumber(docs: readonly Doc[], claim: Claim<number>, tokensOf: (span: string) => Token[], show: (n: number) => string): Checked<number> {
-  const located = locate(docs, claim.cite);
+function checkNumber(docs: readonly Doc[], claim: Claim<number>, expect: Expect, tokensOf: (span: string) => Token[], show: (n: number) => string): Checked<number> {
+  const located = locate(docs, claim.cite, expect);
   if ("missing" in located) return verdict(claim, "unsupported", located.missing);
   const tokens = tokensOf(located.span);
   const garbled = tokens.find((t) => t.garble);
@@ -123,17 +138,17 @@ function checkNumber(docs: readonly Doc[], claim: Claim<number>, tokensOf: (span
   return verdict(claim, "unsupported", `the quoted text prints ${tokens.map((t) => t.text).join(", ")}, not ${show(claim.value)}`);
 }
 
-export function checkMoney(docs: readonly Doc[], claim: Claim<number>): Checked<number> {
-  return checkNumber(docs, claim, moneyTokens, (n) => `$${n.toFixed(2)}`);
+export function checkMoney(docs: readonly Doc[], claim: Claim<number>, expect: Expect = {}): Checked<number> {
+  return checkNumber(docs, claim, expect, moneyTokens, (n) => `$${n.toFixed(2)}`);
 }
 
-export function checkPercent(docs: readonly Doc[], claim: Claim<number>): Checked<number> {
-  return checkNumber(docs, claim, percentTokens, (n) => `${n}%`);
+export function checkPercent(docs: readonly Doc[], claim: Claim<number>, expect: Expect = {}): Checked<number> {
+  return checkNumber(docs, claim, expect, percentTokens, (n) => `${n}%`);
 }
 
 /** A whole count printed after a label, e.g. "360 months". */
-export function checkCount(docs: readonly Doc[], claim: Claim<number>, unit: string): Checked<number> {
-  const located = locate(docs, claim.cite);
+export function checkCount(docs: readonly Doc[], claim: Claim<number>, unit: string, expect: Expect = {}): Checked<number> {
+  const located = locate(docs, claim.cite, expect);
   if ("missing" in located) return verdict(claim, "unsupported", located.missing);
   const runs = [...located.span.matchAll(new RegExp(`(\\S+)\\s+${unit}\\b`, "gi"))].map((m) => m[1]!);
   const bad = runs.find((run) => !/^\d+$/.test(run));
@@ -142,8 +157,8 @@ export function checkCount(docs: readonly Doc[], claim: Claim<number>, unit: str
   return verdict(claim, "unsupported", `the quoted text doesn't print ${claim.value} ${unit}`);
 }
 
-export function checkDate(docs: readonly Doc[], claim: Claim<string>): Checked<string> {
-  const located = locate(docs, claim.cite);
+export function checkDate(docs: readonly Doc[], claim: Claim<string>, expect: Expect = {}): Checked<string> {
+  const located = locate(docs, claim.cite, expect);
   if ("missing" in located) return verdict(claim, "unsupported", located.missing);
   const tokens = dateTokens(located.span);
   const unreadable = tokens.find((t) => t.value === null);
@@ -153,8 +168,8 @@ export function checkDate(docs: readonly Doc[], claim: Claim<string>): Checked<s
 }
 
 /** Free text (an instrument number, a holder's name) must appear in the quote as given. */
-export function checkText(docs: readonly Doc[], claim: Claim<string>): Checked<string> {
-  const located = locate(docs, claim.cite);
+export function checkText(docs: readonly Doc[], claim: Claim<string>, expect: Expect = {}): Checked<string> {
+  const located = locate(docs, claim.cite, expect);
   if ("missing" in located) return verdict(claim, "unsupported", located.missing);
   if (!claim.value.trim()) return verdict(claim, "unsupported", "empty value");
   return located.span.includes(squash(claim.value)) ? verdict(claim, "supported") : verdict(claim, "unsupported", `the quoted text doesn't print "${claim.value}"`);
@@ -164,8 +179,8 @@ export function checkText(docs: readonly Doc[], claim: Claim<string>): Checked<s
  * A label (what kind of lien, what kind of page) is decided by code from the quoted text. The
  * reader's label stands only if code reads the same one; a disagreement is unsupported.
  */
-export function checkLabel<T extends string>(docs: readonly Doc[], claim: Claim<T>, labelOf: (span: string) => T): Checked<T> {
-  const located = locate(docs, claim.cite);
+export function checkLabel<T extends string>(docs: readonly Doc[], claim: Claim<T>, labelOf: (span: string) => T, expect: Expect = {}): Checked<T> {
+  const located = locate(docs, claim.cite, expect);
   if ("missing" in located) return verdict(claim, "unsupported", located.missing);
   const label = labelOf(located.span);
   return label === claim.value ? verdict(claim, "supported") : verdict(claim, "unsupported", `the quoted text reads as ${label}, not ${claim.value}`);
