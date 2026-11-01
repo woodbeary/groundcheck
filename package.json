@@ -20,5 +20,8 @@
     "@types/node": "22.20.5",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.28.0"
+  "packageManager": "pnpm@10.28.0",
+  "optionalDependencies": {
+    "@anthropic-ai/sdk": "0.135.0"
+  }
 }
