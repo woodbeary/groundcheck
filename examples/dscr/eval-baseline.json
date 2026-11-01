@@ -1,0 +1,5 @@
+{
+  "reader": "reference reader (src/dscr/read.ts) on the six synthetic files",
+  "accuracy": 1,
+  "unsupportedRate": 0
+}

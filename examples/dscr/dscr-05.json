@@ -1,0 +1,125 @@
+{
+  "id": "dscr-05",
+  "synthetic": true,
+  "note": "Complete file with association dues. Coverage clears a 1.00 floor but not 1.25.",
+  "request": {
+    "asOf": "2026-10-31"
+  },
+  "docs": [
+    {
+      "id": "cover",
+      "pages": [
+        {
+          "n": 1,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "LOAN PACKAGE COVER SHEET",
+            "Table of Contents: documents follow in the order received.",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rent-schedule",
+      "pages": [
+        {
+          "n": 2,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "SINGLE-FAMILY COMPARABLE RENT SCHEDULE",
+            "Property: 12 Sample Court, Testville, CA 90000",
+            "Effective Date of Appraisal: September 22, 2026",
+            "Estimated Monthly Market Rent: $3,600.00",
+            "Association Dues: see association statement",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lease",
+      "pages": [
+        {
+          "n": 3,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "RESIDENTIAL LEASE AGREEMENT",
+            "Property: 12 Sample Court, Testville, CA 90000",
+            "Landlord: Robin Testcase",
+            "Tenant: Casey Example",
+            "Monthly Rent: $3,500.00",
+            "Term: August 1, 2026 through July 31, 2027",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "note",
+      "pages": [
+        {
+          "n": 4,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "PROMISSORY NOTE",
+            "Borrower promises to pay the Lender the principal amount below, plus interest.",
+            "Principal Amount: $360,000.00",
+            "Interest Rate: 7.125%",
+            "Term: 360 months",
+            "Monthly Principal and Interest Payment: $2,425.39",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tax-bill",
+      "pages": [
+        {
+          "n": 5,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "PROPERTY TAX BILL",
+            "Property: 12 Sample Court, Testville, CA 90000",
+            "Fiscal Year: July 1, 2026 to June 30, 2027",
+            "Total Annual Tax: $5,400.00",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "insurance",
+      "pages": [
+        {
+          "n": 6,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "LANDLORD INSURANCE DECLARATIONS",
+            "Property: 12 Sample Court, Testville, CA 90000",
+            "Policy Period: March 1, 2026 to March 1, 2027",
+            "Total Annual Premium: $1,560.00",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "association",
+      "pages": [
+        {
+          "n": 7,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "HOMEOWNERS ASSOCIATION STATEMENT",
+            "Property: 12 Sample Court, Testville, CA 90000",
+            "Statement Date: October 1, 2026",
+            "Monthly Assessment: $185.00",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    }
+  ]
+}

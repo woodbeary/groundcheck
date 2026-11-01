@@ -13,6 +13,7 @@
  */
 
 import { dateTokens } from "./dates.ts";
+import { dollars } from "./format.ts";
 
 export interface Page {
   /** Physical page number in the file. Stable when other pages go missing. */
@@ -139,7 +140,7 @@ function checkNumber(docs: readonly Doc[], claim: Claim<number>, expect: Expect,
 }
 
 export function checkMoney(docs: readonly Doc[], claim: Claim<number>, expect: Expect = {}): Checked<number> {
-  return checkNumber(docs, claim, expect, moneyTokens, (n) => `$${n.toFixed(2)}`);
+  return checkNumber(docs, claim, expect, moneyTokens, dollars);
 }
 
 export function checkPercent(docs: readonly Doc[], claim: Claim<number>, expect: Expect = {}): Checked<number> {

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { allPages, withoutPages, type LoanFile } from "../src/core/file.ts";
 import type { Interval, Tri } from "../src/core/interval.ts";
+import { dscrCheck, type DscrRequest } from "../src/dscr/index.ts";
 import { lienstack, type LienRequest } from "../src/lienstack/index.ts";
 import { examples } from "./helpers.ts";
 
@@ -35,6 +36,21 @@ describe("soundness: a missing page can only widen", () => {
         assert.ok(contains(r.cltv, full.cltv), `${file.id} without ${label}: CLTV narrowed`);
         assert.ok(full.heloc.otherLoan === r.heloc.otherLoan || r.heloc.otherLoan === "unknown", `${file.id} without ${label}: otherLoan`);
         assert.ok(contains(r.heloc.otherBalance, full.heloc.otherBalance), `${file.id} without ${label}: otherBalance narrowed`);
+      }
+    });
+  }
+
+  for (const file of examples<DscrRequest>("dscr")) {
+    it(`dscr-check ${file.id}: no overlay result gets more decided, and every range only widens`, () => {
+      const full = dscrCheck(file);
+      for (const { label, file: less } of removals(file)) {
+        const r = dscrCheck(less);
+        for (const o of full.overlays) {
+          const after = r.overlays.find((x) => x.overlay.id === o.overlay.id)!.status;
+          assert.ok(onlyWidens(o.status, after), `${file.id} without ${label}: ${o.overlay.id} went ${o.status} -> ${after}`);
+        }
+        assert.ok(contains(r.dscr, full.dscr), `${file.id} without ${label}: DSCR narrowed`);
+        for (const p of full.parts) assert.ok(contains(r.parts.find((x) => x.name === p.name)!.value, p.value), `${file.id} without ${label}: ${p.name} narrowed`);
       }
     });
   }

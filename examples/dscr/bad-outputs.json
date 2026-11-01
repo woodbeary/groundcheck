@@ -1,0 +1,45 @@
+[
+  {
+    "file": "dscr-03",
+    "note": "Repaired the tax bill's merged total by keeping the second number.",
+    "claim": { "field": "annual tax", "value": 5812.66, "cite": { "doc": "tax-bill", "page": 5, "span": "Total Annual Tax: $5,400.00$5,812.66" } },
+    "expect": "held"
+  },
+  {
+    "file": "dscr-03",
+    "note": "Repaired the tax bill's merged total by keeping the first number.",
+    "claim": { "field": "annual tax", "value": 5400, "cite": { "doc": "tax-bill", "page": 5, "span": "Total Annual Tax: $5,400.00$5,812.66" } },
+    "expect": "held"
+  },
+  {
+    "file": "dscr-02",
+    "note": "No lease in the file, so it filled lease rent from the market rent line.",
+    "claim": { "field": "lease rent", "value": 3900, "cite": { "doc": "rent-schedule", "page": 2, "span": "Estimated Monthly Market Rent: $3,900.00" } },
+    "readAs": "rent-schedule",
+    "expect": "unsupported"
+  },
+  {
+    "file": "dscr-01",
+    "note": "Read the market rent as the lease rent.",
+    "claim": { "field": "lease rent", "value": 3900, "cite": { "doc": "lease", "page": 3, "span": "Monthly Rent: $3,850.00" } },
+    "expect": "unsupported"
+  },
+  {
+    "file": "dscr-04",
+    "note": "Read a premium off the blank scan that was routed to a person.",
+    "claim": { "field": "annual premium", "value": 1560, "cite": { "doc": "scan", "page": 7, "span": "Total Annual Premium: $1,560.00" } },
+    "expect": "unsupported"
+  },
+  {
+    "file": "dscr-01",
+    "note": "Quoted the principal amount as the monthly payment.",
+    "claim": { "field": "principal and interest", "value": 360000, "cite": { "doc": "note", "page": 4, "span": "Principal Amount: $360,000.00" } },
+    "expect": "unsupported"
+  },
+  {
+    "file": "dscr-04",
+    "note": "Took the expired policy's premium, citing the current year's policy period that the page doesn't print.",
+    "claim": { "field": "annual premium", "value": 1490, "cite": { "doc": "insurance", "page": 6, "span": "Policy Period: March 1, 2026 to March 1, 2027" } },
+    "expect": "unsupported"
+  }
+]

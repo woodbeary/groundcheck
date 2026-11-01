@@ -10,6 +10,7 @@
  */
 
 import { daysBetween, monthsBefore } from "../core/dates.ts";
+import { dollars } from "../core/format.ts";
 import {
   backed,
   checkDate,
@@ -162,7 +163,7 @@ function currentStatements(docs: readonly Doc[], reading: TitleReading, request:
     const age = daysBetween(d, request.asOf);
     if (age === null || age < 0 || age > policy.maxStatementAgeDays) return [];
     if (b > o) {
-      problems.push({ field: balance.field, doc: balance.cite.doc, page: balance.cite.page, status: "held", reason: `balance $${b.toFixed(2)} is above the original principal $${o.toFixed(2)}: negative amortization, or a different loan` });
+      problems.push({ field: balance.field, doc: balance.cite.doc, page: balance.cite.page, status: "held", reason: `balance ${dollars(b)} is above the original principal ${dollars(o)}: negative amortization, or a different loan` });
       return [];
     }
     return [{ doc: s.doc, date: d, original: o, balance: b }];
@@ -181,9 +182,9 @@ function balanceOf(item: Item, mortgageItems: readonly Item[], statements: reado
   const amount = backed(item.amount);
   if (amount === null) return { balance: UNBACKED, because: `recorded amount of ${label} is not backed, so no statement can be tied to it` };
   const twins = mortgageItems.filter((other) => other !== item && backed(other.amount) === amount);
-  if (twins.length > 0) return { balance: UNBACKED, because: `two liens record $${amount.toFixed(2)}; a statement can't say which it covers` };
+  if (twins.length > 0) return { balance: UNBACKED, because: `two liens record ${dollars(amount)}; a statement can't say which it covers` };
   const mine = statements.filter((s) => Math.round(s.original * 100) === Math.round(amount * 100));
-  if (mine.length === 0) return { balance: UNBACKED, because: `no statement dated within ${policy.maxStatementAgeDays} days matches ${label}'s recorded $${amount.toFixed(2)}` };
+  if (mine.length === 0) return { balance: UNBACKED, because: `no statement dated within ${policy.maxStatementAgeDays} days matches ${label}'s recorded ${dollars(amount)}` };
   const latest = mine.reduce((a, b) => (b.date > a.date ? b : a)).date;
   const same = mine.filter((s) => s.date === latest);
   const balance = same.map((s) => point(s.balance)).reduce(hull);
