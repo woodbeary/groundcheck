@@ -211,9 +211,10 @@ Duplicate Attachments. This sits around it:
   form types to dscr-check's parts: 1007 market rent (Part05, "I (We) Estimate the Monthly Market
   Rent of the Subject to Be"), lease rent and term, the note's principal, rate, payment and dates,
   the tax bill, the insurance policy and the association statement. Capture's `raw_fields` carry a
-  value, a confidence and a filename but no page or quote, so they are a second, weaker kind of
-  evidence (`src/core/vendor.ts`): a vendor field stands only if it came from the form type that
-  carries it, isn't empty, clears a confidence floor and parses as one value; a garbled one is held.
+  value and a filename (a confidence only in the API reference's example) but no page or quote, so
+  they are a second, weaker kind of evidence (`src/core/vendor.ts`): a vendor field stands only if
+  it came from the form type that carries it, isn't empty, carries a confidence that clears the
+  floor and parses as one value; a garbled one is held, and one with no confidence goes to a person.
   Three mappings are decisions to confirm with a lender: the 1007's report signed date dates it; a
   tax bill is current when issued within 365 days, since TAX_BILL has no fiscal period; and
   `totalTaxesDue` is the annual tax only when its installments add up to it.

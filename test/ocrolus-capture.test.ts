@@ -36,6 +36,9 @@ describe("vendor-field evidence [doc: https://docs.ocrolus.com/docs/form-data, c
     assert.equal(ok.status, "supported");
     assert.equal(ok.evidence, "vendor-field");
     assert.match(checkVendor(claim("3850.00", 0.62), expect).reason ?? "", /confidence 0.62 is below the floor of 0.9/);
+    const unscored = checkVendor({ ...claim("3850.00"), source: { ...claim("3850.00").source, confidence: null } }, expect);
+    assert.equal(unscored.status, "unsupported", "a field with no confidence hasn't cleared the floor");
+    assert.match(unscored.reason ?? "", /no confidence/);
     assert.match(checkVendor(claim("3850.00", 1, "FORM_1000_OR_1007_SINGLE_FAMILY_COMPARABLE_RENT_SCHEDULE"), expect).reason ?? "", /captured from a FORM_1000/);
     assert.equal(checkVendor(claim(""), expect).status, "unsupported");
     assert.equal(checkVendor({ ...claim("3850.00"), value: 3900 }, expect).status, "unsupported");
@@ -65,7 +68,17 @@ describe("Ocrolus Capture adapter for dscr-check [doc-derived fixture: https://d
   });
 
   it("[https://docs.ocrolus.com/docs/lease-agreement] can't pass a file with no lease, a lease below the confidence floor, or one that has ended", () => {
-    for (const b of [withField(KEY.leaseRent, null), withField(KEY.leaseRent, { confidence: 0.62 }), withField(KEY.leaseEnd, { value: "09/30/2026" })]) {
+    const unscored: BookForms = {
+      ...book,
+      response: {
+        ...book.response,
+        forms: book.response.forms.map((f) => {
+          const field = f.raw_fields[KEY.leaseRent];
+          return field ? { ...f, raw_fields: { ...f.raw_fields, [KEY.leaseRent]: { value: field.value, source_filename: field.source_filename } } } : f;
+        }),
+      },
+    };
+    for (const b of [withField(KEY.leaseRent, null), withField(KEY.leaseRent, { confidence: 0.62 }), unscored, withField(KEY.leaseEnd, { value: "09/30/2026" })]) {
       const r = run(b);
       assert.equal(partOf(r, "lease rent").value.hi, Infinity);
       assert.deepEqual(r.rent, { lo: 0, hi: 3900 });

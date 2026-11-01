@@ -1,12 +1,15 @@
 /**
  * A second kind of evidence, weaker than a quoted line: a value a vendor extractor captured.
- * Ocrolus Capture's `raw_fields` carry a value, a confidence and the source filename, but no page
- * and no quote (https://docs.ocrolus.com/docs/form-data, checked 2026-11-01), so the citation
- * gate can't check them against a printed line. Pretending otherwise would fake a citation.
+ * Ocrolus Capture's `raw_fields` carry a value and the source filename, but no page and no quote
+ * (https://docs.ocrolus.com/docs/form-data, checked 2026-11-01), so the citation gate can't check
+ * them against a printed line. Pretending otherwise would fake a citation. A confidence appears in
+ * the API reference's example (https://docs.ocrolus.com/reference/book-form-data) but not in the
+ * form-data field table, so it can't be assumed present.
  *
  * A vendor field stands only if it came from the form type that carries it, the vendor didn't
- * mark it empty, its confidence clears the policy's floor, and its text parses cleanly as one
- * value; a garbled value is held, as on a page. Every gated vendor value says "vendor-field", so
+ * mark it empty, it carries a confidence that clears the policy's floor, and its text parses
+ * cleanly as one value; a garbled value is held, as on a page. A field with no confidence hasn't
+ * cleared the floor, so a person checks it. Every gated vendor value says "vendor-field", so
  * reports can count it apart from quoted values.
  */
 
@@ -82,7 +85,8 @@ export function checkVendor<T extends number | string>(claim: VendorClaim<T>, ex
   const s = claim.source;
   if (!expect.formTypes.includes(s.formType)) return verdict(claim, "unsupported", `captured from a ${s.formType} form, not ${expect.formTypes.join(" or ")}`);
   if (!s.raw.trim()) return verdict(claim, "unsupported", `Ocrolus reports ${s.key} empty`);
-  if (s.confidence !== null && s.confidence < expect.floor) return verdict(claim, "unsupported", `confidence ${s.confidence} is below the floor of ${expect.floor}; a person checks it`);
+  if (s.confidence === null) return verdict(claim, "unsupported", `Ocrolus reports no confidence for ${s.key}, so it can't clear the floor of ${expect.floor}; a person checks it`);
+  if (s.confidence < expect.floor) return verdict(claim, "unsupported", `confidence ${s.confidence} is below the floor of ${expect.floor}; a person checks it`);
   const read = readVendor(s.raw, expect.kind);
   if ("garble" in read) return verdict(claim, "held", read.garble);
   const same = typeof read.value === "number" && typeof claim.value === "number" ? Math.round(read.value * 100) === Math.round(claim.value * 100) : read.value === claim.value;
