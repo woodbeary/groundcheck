@@ -181,9 +181,10 @@ function balanceOf(item: Item, mortgageItems: readonly Item[], statements: reado
   const label = backed(item.instrument) ?? `item ${item.number}`;
   const amount = backed(item.amount);
   if (amount === null) return { balance: UNBACKED, because: `recorded amount of ${label} is not backed, so no statement can be tied to it` };
-  const twins = mortgageItems.filter((other) => other !== item && backed(other.amount) === amount);
+  const cents = (n: number | null) => (n === null ? null : Math.round(n * 100));
+  const twins = mortgageItems.filter((other) => other !== item && cents(backed(other.amount)) === cents(amount));
   if (twins.length > 0) return { balance: UNBACKED, because: `two liens record ${dollars(amount)}; a statement can't say which it covers` };
-  const mine = statements.filter((s) => Math.round(s.original * 100) === Math.round(amount * 100));
+  const mine = statements.filter((s) => cents(s.original) === cents(amount));
   if (mine.length === 0) return { balance: UNBACKED, because: `no statement dated within ${policy.maxStatementAgeDays} days matches ${label}'s recorded ${dollars(amount)}` };
   const latest = mine.reduce((a, b) => (b.date > a.date ? b : a)).date;
   const same = mine.filter((s) => s.date === latest);

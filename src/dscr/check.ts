@@ -107,15 +107,13 @@ export function checkDscr(
 ): DscrReport {
   const g = new Gate(docs, routed);
   const asOf = request.asOf;
-  const notWhy: string[] = [];
 
   const appraisals = reading.appraisals.map((a) => {
     const effective = g.date(a.effective, a.doc, RENT, L.appraisalDate);
     const age = effective === null ? null : daysBetween(effective, asOf);
-    const current = age !== null && age >= 0 && age <= policy.maxAppraisalAgeDays;
-    if (effective !== null && !current) notWhy.push(`rent schedule "${a.doc}" is effective ${effective}, outside ${policy.maxAppraisalAgeDays} days before ${asOf}`);
     return {
-      current,
+      doc: a.doc,
+      current: age !== null && age >= 0 && age <= policy.maxAppraisalAgeDays,
       effective,
       rent: g.money(a.marketRent, a.doc, RENT, L.marketRent),
       noDues: g.run(a.noDues, RENT, (c) => checkLabel(docs, c, duesLine, { doc: a.doc })),
@@ -124,10 +122,18 @@ export function checkDscr(
   const currentAppraisals = appraisals.filter((a) => a.current);
   const newest = currentAppraisals.reduce<string | null>((d, a) => (a.effective! > (d ?? "") ? a.effective : d), null);
   const latest = currentAppraisals.filter((a) => a.effective === newest);
+  const marketNone =
+    appraisals.length === 0
+      ? "no rent schedule in the file"
+      : latest.length > 0
+        ? "the current rent schedule's market rent is not backed"
+        : appraisals
+            .map((a) => (a.effective ? `rent schedule "${a.doc}" is effective ${a.effective}, not within ${policy.maxAppraisalAgeDays} days before ${asOf}` : `rent schedule "${a.doc}" effective date is not backed`))
+            .join("; ");
   const market =
     latest.length > 0 && latest.every((a) => a.rent !== null)
       ? part("market rent", latest.map((a) => point(a.rent!)), `rent schedule effective ${newest}`, "")
-      : part("market rent", [], "", latest.length > 0 ? "the current rent schedule's market rent is not backed" : (notWhy.find((w) => w.startsWith("rent schedule")) ?? "no current rent schedule in the file"));
+      : part("market rent", [], "", marketNone);
 
   const leases = reading.leases.map((l) => {
     const start = g.date(l.start, l.doc, LEGAL, L.term);

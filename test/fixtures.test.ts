@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, it } from "node:test";
+import { parseFile } from "../src/core/file.ts";
 import { EXAMPLES } from "./helpers.ts";
 
 const SSN = /\b\d{3}-\d{2}-\d{4}\b/;
@@ -22,4 +23,12 @@ describe("example files carry no real-looking personal data", () => {
       });
     }
   }
+});
+
+describe("the loader", () => {
+  it("refuses a file not marked synthetic", () => {
+    const real = { id: "x", synthetic: false, request: {}, docs: [{ id: "d", pages: [{ n: 1, lines: ["text"] }] }] };
+    assert.throws(() => parseFile(real), /only synthetic files/);
+    assert.throws(() => parseFile({ id: "x" }), /not a loan file/);
+  });
 });

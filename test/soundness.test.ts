@@ -36,6 +36,7 @@ describe("soundness: a missing page can only widen", () => {
         assert.ok(contains(r.cltv, full.cltv), `${file.id} without ${label}: CLTV narrowed`);
         assert.ok(full.heloc.otherLoan === r.heloc.otherLoan || r.heloc.otherLoan === "unknown", `${file.id} without ${label}: otherLoan`);
         assert.ok(contains(r.heloc.otherBalance, full.heloc.otherBalance), `${file.id} without ${label}: otherBalance narrowed`);
+        assert.ok(contains(r.heloc.balance, full.heloc.balance), `${file.id} without ${label}: balance narrowed`);
       }
     });
   }
