@@ -2,8 +2,9 @@
  * The provenance log: one JSON line per gated claim, appended and never rewritten. Each row
  * carries the input file's SHA-256, where the value was quoted from, which reader proposed it
  * (and its version and prompt hash, for a model), and what the gate decided. Each row also
- * carries the hash of the line before it, so an edited, reordered or truncated log no longer
- * verifies.
+ * carries the hash of the line before it, so a log with a line edited, reordered or removed from
+ * the middle no longer verifies. A chain can't show that lines were cut off its end: for that,
+ * keep the head (`auditHead`, the last row's hash) somewhere else and verify against it.
  *
  * A person can resolve a held value. That never edits the held row: it appends a new row naming
  * who decided (`decidedBy`) and pointing at the row it resolves.
@@ -61,6 +62,11 @@ function lastHash(path: string): string {
   return all.length === 0 ? "" : sha256(all[all.length - 1]!);
 }
 
+/** The hash of the log's last row ("" when empty): kept elsewhere, it lets `verifyAudit` catch a cut-off tail. */
+export function auditHead(path: string): string {
+  return lastHash(path);
+}
+
 /** The rows a run adds, chained onto whatever the log already holds. */
 export function appendRun(path: string, run: Run, reader: ReaderId, at = new Date().toISOString()): AuditRow[] {
   let prev = lastHash(path);
@@ -99,16 +105,21 @@ export function readAudit(path: string): AuditRow[] {
   return lines(path).map((line) => JSON.parse(line) as AuditRow);
 }
 
-/** The first line whose chain is broken, or null when the log is intact. */
-export function verifyAudit(path: string): { line: number; reason: string } | null {
+/**
+ * The first line whose chain is broken, or null when the log is intact. Given the head kept from
+ * an earlier `auditHead`, a log that no longer reaches that row fails too.
+ */
+export function verifyAudit(path: string, head?: string): { line: number; reason: string } | null {
   let prev = "";
   const all = lines(path);
+  let reached = head === undefined || head === "";
   for (const [i, line] of all.entries()) {
     const row = JSON.parse(line) as AuditRow;
     if (row.prev !== prev) return { line: i + 1, reason: "the previous line was changed, removed or reordered" };
     prev = sha256(line);
+    if (prev === head) reached = true;
   }
-  return null;
+  return reached ? null : { line: all.length + 1, reason: "the log no longer reaches the head kept for it: lines were cut off the end" };
 }
 
 /**

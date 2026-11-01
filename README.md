@@ -201,8 +201,9 @@ document can't be told from one that was never there.
 
 `--audit log.jsonl` appends one row per gated claim: the file's SHA-256, the document, page and
 quote, the reader with its version and prompt hash, the gate's status and reason, and the hash of
-the line before it, so an edited, dropped or reordered line no longer verifies
-(`src/core/audit.ts`). A person resolving a held value adds a row with their name in `decidedBy`;
+the line before it, so a line edited, reordered or dropped from the middle no longer verifies
+(`src/core/audit.ts`). Lines cut off the end are caught only against the last row's hash kept
+somewhere else (`auditHead`). A person resolving a held value adds a row with their name in `decidedBy`;
 the held row never changes. Every report also prints the input file's SHA-256.
 
 ## The Encompass half of dscr-check (on mocks)
@@ -273,7 +274,7 @@ deployment would host both in its own cloud tenant.
 
 ```bash
 pnpm install
-pnpm test                                             # 272 tests
+pnpm test                                             # 273 tests
 pnpm typecheck
 pnpm lienstack examples/title/title-03.json           # any file in examples/title or examples/title-b
 pnpm lienstack examples/title/title-01.json --as-of 2026-12-15
@@ -329,7 +330,7 @@ doesn't call it yet.
 
 ## What was tested
 
-Measured in this repository, on synthetic files only, on Node 22.22: 272 tests with Node's test
+Measured in this repository, on synthetic files only, on Node 22.22: 273 tests with Node's test
 runner, all passing, and a clean typecheck. Beyond the soundness and eval tests above:
 
 - **Gate.** Merged digits, two numbers in one token, footnote marks and merged dates are held; a

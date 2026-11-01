@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { after, describe, it } from "node:test";
-import { appendRun, readAudit, resolveHeld, verifyAudit } from "../src/core/audit.ts";
+import { appendRun, auditHead, readAudit, resolveHeld, verifyAudit } from "../src/core/audit.ts";
 import { sha256 } from "../src/core/file.ts";
 import { lienstack, type LienRequest } from "../src/lienstack/index.ts";
 import { EXAMPLES, example } from "./helpers.ts";
@@ -48,6 +48,17 @@ describe("the provenance log", () => {
     assert.equal(verifyAudit(log)?.line, 2);
     writeFileSync(log, [good[1], good[0], ...good.slice(2)].join("\n") + "\n");
     assert.equal(verifyAudit(log)?.line, 1);
+  });
+
+  it("can't see lines cut off the end on its own, and catches it against a head kept elsewhere", () => {
+    const log = join(dir, "tail.jsonl");
+    appendRun(log, { check: "lienstack", ...lienstack(example<LienRequest>("title", "title-02")) }, reference);
+    const head = auditHead(log);
+    assert.equal(verifyAudit(log, head), null);
+    const good = readFileSync(log, "utf8").split("\n").filter(Boolean);
+    writeFileSync(log, good.slice(0, -1).join("\n") + "\n");
+    assert.equal(verifyAudit(log), null, "a chain alone can't tell its last line is gone");
+    assert.match(verifyAudit(log, head)?.reason ?? "", /cut off the end/);
   });
 
   it("records a person's resolution of a held value as a new row with their name, never an edit", () => {
