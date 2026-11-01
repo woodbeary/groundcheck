@@ -66,6 +66,6 @@ if (command === "lienstack" && path) printLiens(path);
 else if (command === "dscr" && path) printDscr(path);
 else if (command === "eval") printEval(path ?? "examples/dscr");
 else {
-  console.error("usage: node src/cli.ts lienstack <file.json> | dscr <file.json> | eval [dir]");
+  console.error("groundcheck usage: node src/cli.ts lienstack <file.json> | dscr <file.json> | eval [dir]");
   process.exitCode = 2;
 }

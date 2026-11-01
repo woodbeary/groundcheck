@@ -1,6 +1,7 @@
-# lending-checks
+# groundcheck
 
-Two loan-file checks that take no value on a reader's word.
+Title and loan-document checks that take no value on a reader's word. groundcheck v0.1 holds
+two checks:
 
 - **lienstack** reads a preliminary title report's Schedule B and the mortgage statements in a
   file, then checks the lien conditions a second-lien HELOC guide prints: the new line records
@@ -32,7 +33,7 @@ escrow. The lesson in this repository came from software I built myself:
   sorted loan PDF pages into seven classes, one of them `UNCERTAIN` for a person, extracted the
   rent schedule, and scored DSCR, and every reviewer's "Bad Output" click went into a golden set.
   The payment and expenses behind that score were hard-coded ($3,150 a month, $8,200 a year).
-- **October 4, 2026.** Transcribing lenders' HELOC grids into my own HELOC engine, I found
+- **October 3, 2026.** Transcribing lenders' HELOC grids into my own HELOC engine, I found
   second-lien cells printed with merged tracked changes (`$375400,000`, `75%85%***`). I held them
   with a written reason instead of guessing. The same day I kept a DSCR cash-out grid blocked,
   because it turns on rent coverage, which that engine's questions don't ask.

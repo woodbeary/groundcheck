@@ -1,7 +1,7 @@
 {
-  "name": "lending-checks",
+  "name": "groundcheck",
   "version": "0.1.0",
-  "description": "Three-valued lien and DSCR checks over cited loan documents. A value counts only if a current document backs it.",
+  "description": "Title and loan-document checks where a value counts only if its cited line prints it. Two checks: lienstack and dscr-check.",
   "license": "MIT",
   "author": "Jacob Lopez",
   "private": true,
