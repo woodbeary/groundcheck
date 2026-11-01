@@ -1,0 +1,83 @@
+{
+  "id": "alta-08",
+  "synthetic": true,
+  "layout": "alta-2021-commitment",
+  "note": "Printed page 3 of 4, the first Part II page, never arrived.",
+  "request": {
+    "asOf": "2026-10-31",
+    "homeValue": {
+      "lo": 700000,
+      "hi": 700000
+    },
+    "amount": {
+      "lo": 100000,
+      "hi": 100000
+    },
+    "maxCltv": 80
+  },
+  "docs": [
+    {
+      "id": "commitment",
+      "pages": [
+        {
+          "n": 1,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "COMMITMENT FOR TITLE INSURANCE (ALTA 2021 v. 01.00)",
+            "Issued by Synthetic Abstract and Title Co.    Commitment No. SYN-B-0808",
+            "SCHEDULE A",
+            "1. Commitment Date: October 12, 2026 at 8:00 a.m.",
+            "2. Policy to be issued: ALTA 2021 Loan Policy. Proposed Insured: the lender of the new line of credit.",
+            "3. The estate or interest in the Land at the Commitment Date is Fee Simple.",
+            "4. The Title is, at the Commitment Date, vested in: Pat Sample and Lee Sample, as joint tenants.",
+            "5. The Land is described in Exhibit A, not reproduced in this synthetic file.",
+            "Commitment No. SYN-B-0808    Page 1 of 4"
+          ]
+        },
+        {
+          "n": 2,
+          "lines": [
+            "Commitment No. SYN-B-0808    SCHEDULE B, PART I - REQUIREMENTS",
+            "All of the following Requirements must be met:",
+            "1. The Proposed Insured must notify the Company in writing of the name of any party not referred to in this Commitment who will obtain an interest in the Land or who will make a loan on the Land.",
+            "2. Pay the agreed amount for the estate or interest to be insured.",
+            "3. Pay the premiums, fees, and charges for the Policy to the Company.",
+            "4. Documents satisfactory to the Company that convey the Title or create the Mortgage to be insured must be properly authorized, executed, delivered, and recorded in the Public Records.",
+            "Commitment No. SYN-B-0808    Page 2 of 4"
+          ]
+        },
+        {
+          "n": 4,
+          "lines": [
+            "Commitment No. SYN-B-0808    SCHEDULE B, PART II - EXCEPTIONS (continued)",
+            "7. Easement in favor of Synthetic Power and Light Co. for underground utilities, recorded June 2, 1987 as Document No. 1987-0042210.",
+            "8. A Deed of Trust and Assignment of Rents to secure an original principal amount of $412,000.00, dated February 26, 2021,",
+            "   recorded March 3, 2021 as Document No. 2021-0123456 of Official Records.",
+            "   Trustor: Pat Sample and Lee Sample. Beneficiary: Quillfeather Home Loans LLC.",
+            "9. Covenants, conditions and restrictions recorded May 14, 1986 as Document No. 1986-0031177.",
+            "END OF SCHEDULE B, PART II",
+            "This page is only a part of a 2021 ALTA Commitment for Title Insurance (synthetic).",
+            "Commitment No. SYN-B-0808    Page 4 of 4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "first-statement",
+      "pages": [
+        {
+          "n": 5,
+          "lines": [
+            "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.",
+            "MONTHLY MORTGAGE STATEMENT",
+            "Servicer: Quillfeather Home Loans LLC",
+            "Statement Date: 10/15/2026",
+            "Original Principal: $412,000.00",
+            "Outstanding Principal Balance: $371,218.40",
+            "Page 1 of 1"
+          ]
+        }
+      ]
+    }
+  ]
+}

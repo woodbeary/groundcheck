@@ -71,26 +71,66 @@ interface TitleState {
 
 const LABELS = {
   recorded: { name: "recording", pattern: /\brecorded\b/i },
-  instrument: { name: "instrument number", pattern: /Instrument No/i },
+  instrument: { name: "instrument number", pattern: /Instrument No|Document No/i },
   amount: { name: "amount", pattern: /amount of|\bfor\s+\$/i },
   holder: { name: "beneficiary or creditor", pattern: /Beneficiary|Creditor|Lender/i },
-  effective: { name: "effective date", pattern: /Effective Date/i },
+  effective: { name: "effective date", pattern: /Effective Date|Commitment Date/i },
   statementDate: { name: "statement date", pattern: /Statement Date/i },
   original: { name: "original principal or credit limit", pattern: /Original Principal|Credit Limit/i },
   balance: { name: "principal balance", pattern: /Principal Balance/i },
 } as const;
 
 const NUMBERED = /^\s*(\d{1,2})\.\s/;
-const ITEM_ENDS = /^\s*(?:\d{1,2}\.\s|END OF SCHEDULE B|Page\s+\d+\s+of\s+\d+)/i;
 
-/** Item `number` as the page prints it: its numbered line and any lines that carry it on. */
+/**
+ * Where a page is in a title report. A preliminary report prints "SCHEDULE B" over its items; a
+ * commitment prints Schedule A, then Schedule B Part I (requirements) and Part II (exceptions),
+ * each numbered from 1. Only exceptions are the items a lien rule reads.
+ */
+const SECTIONS: readonly { section: "exceptions" | "requirements" | "other" | "none"; pattern: RegExp }[] = [
+  { section: "none", pattern: /^\s*END OF SCHEDULE B|Page\s+\d+\s+of\s+\d+|This page is only a part of/i },
+  { section: "exceptions", pattern: /SCHEDULE B,?\s*PART II\b/i },
+  { section: "requirements", pattern: /SCHEDULE B,?\s*PART I\b/i },
+  { section: "other", pattern: /SCHEDULE A\b/i },
+  { section: "exceptions", pattern: /SCHEDULE B\b/i },
+];
+
+interface PrintedItem {
+  readonly number: number;
+  readonly page: number;
+  readonly text: string;
+}
+
+/**
+ * Every numbered exception as printed: its numbered line and the lines that carry it on. A page
+ * starts outside any section, so an item is never read off a page whose header is missing.
+ */
+function exceptionItems(doc: Doc): PrintedItem[] {
+  const items: { number: number; page: number; lines: string[] }[] = [];
+  for (const page of doc.pages) {
+    let section: (typeof SECTIONS)[number]["section"] = "none";
+    let open: { number: number; page: number; lines: string[] } | null = null;
+    for (const line of page.text.split("\n")) {
+      const numbered = NUMBERED.exec(line);
+      if (numbered) {
+        open = section === "exceptions" ? { number: Number(numbered[1]), page: page.n, lines: [line] } : null;
+        if (open) items.push(open);
+        continue;
+      }
+      const header = SECTIONS.find((s) => s.pattern.test(line));
+      if (header) {
+        section = header.section;
+        open = null;
+      } else if (open) open.lines.push(line);
+    }
+  }
+  return items.map((i) => ({ number: i.number, page: i.page, text: i.lines.join("\n") }));
+}
+
+/** Item `number` as the page prints it, or null if that page prints no such exception. */
 function printedItem(docs: readonly Doc[], doc: string, page: number, number: number): string | null {
-  const lines = docs.find((d) => d.id === doc)?.pages.find((p) => p.n === page)?.text.split("\n") ?? [];
-  const start = lines.findIndex((l) => Number(NUMBERED.exec(l)?.[1]) === number);
-  if (start < 0) return null;
-  const rest = lines.slice(start + 1);
-  const end = rest.findIndex((l) => ITEM_ENDS.test(l));
-  return [lines[start]!, ...rest.slice(0, end < 0 ? rest.length : end)].join("\n");
+  const d = docs.find((x) => x.id === doc);
+  return (d && exceptionItems(d).find((i) => i.page === page && i.number === number)?.text) ?? null;
 }
 
 /**
@@ -115,19 +155,14 @@ function gateItem(docs: readonly Doc[], doc: string, reading: ItemReading): Item
   };
 }
 
-/** Numbered lines on the report's Schedule B pages: what a reader has to account for. */
+/** The report's numbered exceptions: what a reader has to account for. */
 function printedItems(doc: Doc): number[] {
-  return doc.pages
-    .filter((p) => /SCHEDULE B/i.test(p.text))
-    .flatMap((p) => p.text.split("\n").flatMap((l) => {
-      const m = NUMBERED.exec(l);
-      return m ? [Number(m[1])] : [];
-    }));
+  return exceptionItems(doc).map((i) => i.number);
 }
 
 function titleState(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy): TitleState {
   const none = (because: string, superseded: string[] = []): TitleState => ({ report: null, effective: null, superseded, decided: false, complete: false, because });
-  if (reading.reports.length === 0) return none("no title report in the file");
+  if (reading.reports.length === 0) return none(reading.readerNote ? `no reading: ${reading.readerNote}` : "no title report in the file");
 
   const dated = reading.reports.map((report) => ({
     report,

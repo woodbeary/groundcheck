@@ -20,12 +20,15 @@ export const MORTGAGE_KINDS: readonly LienKind[] = ["deed-of-trust", "credit-lin
  * deed of trust" without being one, and the coming year's property taxes are printed as "a lien not
  * yet due or payable", which is not the recorded tax lien the rules mean. A lien none of the rules
  * name (a mechanic's lien, an association lien, a lis pendens) is "other-lien", never "other";
- * the printed exception for liens "not shown by the public records" is not a recorded lien.
+ * the printed exceptions for liens "not shown by the public records", for taxes "not shown as existing
+ * liens", and for any lien that "appears for the first time in the Public Records" after the
+ * commitment date (a commitment's standard exceptions) are not recorded liens.
  */
 export function kindOf(text: string): LienKind {
   const t = text.toLowerCase();
   const lead = t.replace(/^\s*\d{1,2}\.\s*/, "").replace(/^(?:an?|the)\s+/, "");
-  if (/^(?:easements?|covenants|conditions and restrictions|restrictions)\b/.test(lead) || /not shown by the public records/.test(t)) return "other";
+  if (/^(?:easements?|covenants|conditions and restrictions|restrictions)\b/.test(lead) || /not shown (?:as existing liens )?by the public records/.test(t)) return "other";
+  if (/appears for the first time in the public records/.test(t)) return "other";
   if (/\btaxes\b/.test(t) && /not yet due/.test(t)) return "property-taxes";
   if (/subordination agreement/.test(t)) return "subordination";
   if (/home equity conversion|reverse mortgage/.test(t)) return "reverse-mortgage";
@@ -62,6 +65,8 @@ export interface StatementReading {
 export interface TitleReading {
   readonly reports: readonly ReportReading[];
   readonly statements: readonly StatementReading[];
+  /** Why a reader returned nothing, when it didn't read (a refusal, a cut-off response). */
+  readonly readerNote?: string;
 }
 
 /** Anything that reads a title file: the reference reader here, a model, or a vendor extractor. */

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
-import { readdirSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { basename, join, relative } from "node:path";
 import { describe, it } from "node:test";
 import { parseFile } from "../src/core/file.ts";
 import { EXAMPLES } from "./helpers.ts";
@@ -10,18 +10,26 @@ const ACCOUNT = /\b\d{9,}\b/;
 const EMAIL = /[\w.+-]+@[\w-]+\.[\w.]+/;
 const PHONE = /\(?\b\d{3}\)?[-.\s]\d{3}[-.\s]\d{4}\b/;
 
-describe("example files carry no real-looking personal data", () => {
-  for (const kind of ["title", "dscr"]) {
-    for (const name of readdirSync(join(EXAMPLES, kind)).filter((n) => n.endsWith(".json"))) {
-      it(`${kind}/${name}`, () => {
-        const text = readFileSync(join(EXAMPLES, kind, name), "utf8");
-        assert.doesNotMatch(text, SSN, "SSN-shaped string");
-        assert.doesNotMatch(text, ACCOUNT, "nine or more digits in a row");
-        assert.doesNotMatch(text, EMAIL, "email address");
-        assert.doesNotMatch(text, PHONE, "phone number");
-        if (/^(title|dscr)-\d+\.json$/.test(name)) assert.equal(JSON.parse(text).synthetic, true);
-      });
-    }
+/** Every JSON fixture in the repository: examples, recorded reader responses and doc-derived mocks. */
+const FIXTURE_DIRS = ["examples", "recordings", "fixtures"].map((d) => new URL(`../${d}/`, import.meta.url).pathname);
+
+function jsonFiles(dir: string): string[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? jsonFiles(join(dir, e.name)) : e.name.endsWith(".json") ? [join(dir, e.name)] : []));
+}
+
+describe("fixtures carry no real-looking personal data", () => {
+  const all = FIXTURE_DIRS.flatMap(jsonFiles);
+  it("finds the fixtures", () => assert.ok(all.some((p) => p.includes("title-b"))));
+  for (const path of all) {
+    it(relative(EXAMPLES, path), () => {
+      const text = readFileSync(path, "utf8");
+      assert.doesNotMatch(text, SSN, "SSN-shaped string");
+      assert.doesNotMatch(text, ACCOUNT, "nine or more digits in a row");
+      assert.doesNotMatch(text, EMAIL, "email address");
+      assert.doesNotMatch(text, PHONE, "phone number");
+      if (/^(title|dscr|alta)-\d+\.json$/.test(basename(path))) assert.equal(JSON.parse(text).synthetic, true);
+    });
   }
 });
 
