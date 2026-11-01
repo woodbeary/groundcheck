@@ -162,7 +162,16 @@ export function checkDscr(
     const months = g.run(n.termMonths, LEGAL, (c) => checkCount(docs, c, "months", { doc: n.doc, label: L.term }));
     const printed = g.money(n.payment, n.doc, LEGAL, L.payment);
     const computed = principal !== null && rate !== null && months !== null && months > 0 ? amortizedPayment(principal, rate, months) : null;
-    if (printed !== null && computed !== null) {
+    const unbacked = [
+      ["principal", n.principal, principal],
+      ["rate", n.rate, rate],
+      ["term", n.termMonths, months],
+      ["payment", n.payment, printed],
+    ].filter(([, proposed, value]) => proposed !== undefined && value === null).map(([name]) => name as string);
+    if (unbacked.length > 0) {
+      payments.push(UNBACKED);
+      paymentWhy.push(`note "${n.doc}" prints its ${unbacked.join(", ")} but the line is not backed, so the payment can't be cross-checked`);
+    } else if (printed !== null && computed !== null) {
       if (Math.abs(printed - computed) <= 0.01) {
         payments.push(point(printed));
         paymentWhy.push(`note "${n.doc}" prints ${money(printed)}, matching its principal, rate and term`);
@@ -178,8 +187,8 @@ export function checkDscr(
         payments.push(UNBACKED);
       }
     } else if (printed !== null) {
-      payments.push(point(printed));
-      paymentWhy.push(`note "${n.doc}" prints ${money(printed)}; its terms aren't backed, so it isn't cross-checked`);
+      payments.push(UNBACKED);
+      paymentWhy.push(`note "${n.doc}" prints ${money(printed)} but no principal, rate and term to check it against`);
     } else if (computed !== null) {
       const rounded = Math.round(computed * 100) / 100;
       payments.push(point(rounded));

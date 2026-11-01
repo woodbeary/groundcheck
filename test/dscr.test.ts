@@ -126,3 +126,17 @@ describe("dscr-check takes no value on a reader's word", () => {
     assert.match(partOf(r, "principal and interest").because, /computed from note/);
   });
 });
+
+describe("dscr-check won't take a printed payment on faith", () => {
+  it("leaves the payment open when the note's principal is garbled, instead of accepting the printed payment unchecked", () => {
+    const r = dscrCheck(edit(file("dscr-06"), "Principal Amount: $360,000.00", "Principal Amount: $318360,000.00"));
+    assert.equal(partOf(r, "principal and interest").value.hi, Infinity);
+    assert.match(partOf(r, "principal and interest").because, /prints its principal but the line is not backed/);
+    assert.deepEqual(verdicts(r), { "overlay-a": "unknown", "overlay-b": "unknown" });
+  });
+
+  it("leaves the payment open when a garbled payment line hides a mismatch, instead of computing around it", () => {
+    const r = dscrCheck(edit(file("dscr-06"), "Payment: $3,150.00", "Payment: $3183,150.00"));
+    assert.equal(partOf(r, "principal and interest").value.hi, Infinity);
+  });
+});

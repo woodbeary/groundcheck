@@ -246,7 +246,7 @@ export function checkTitle(docs: readonly Doc[], reading: TitleReading, request:
   const problems: Problem[] = [];
   const title = titleState(docs, reading, request, policy);
   const report = title.report;
-  const items = report ? report.items.map((r) => gateItem(docs, report.doc, r)) : [];
+  const items = report ? report.items.map((r) => gateItem(docs, report.doc, r)).sort((a, b) => a.number - b.number) : [];
   for (const item of items) for (const c of [item.kind, item.recorded, item.instrument, item.amount, item.holder]) note(problems, c);
   const statements = currentStatements(docs, reading, request, policy, problems);
 
