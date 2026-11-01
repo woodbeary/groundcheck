@@ -78,16 +78,34 @@ const LABELS = {
   balance: { name: "principal balance", pattern: /Principal Balance/i },
 } as const;
 
+const NUMBERED = /^\s*(\d{1,2})\.\s/;
+const ITEM_ENDS = /^\s*(?:\d{1,2}\.\s|END OF SCHEDULE B|Page\s+\d+\s+of\s+\d+)/i;
+
+/** Item `number` as the page prints it: its numbered line and any lines that carry it on. */
+function printedItem(docs: readonly Doc[], doc: string, page: number, number: number): string | null {
+  const lines = docs.find((d) => d.id === doc)?.pages.find((p) => p.n === page)?.text.split("\n") ?? [];
+  const start = lines.findIndex((l) => Number(NUMBERED.exec(l)?.[1]) === number);
+  if (start < 0) return null;
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((l) => ITEM_ENDS.test(l));
+  return [lines[start]!, ...rest.slice(0, end < 0 ? rest.length : end)].join("\n");
+}
+
 /**
- * Every field of an item must be quoted from that item's own numbered line in the same report,
- * and the line must start with the item's number.
+ * An item's kind is read from the whole item as printed, never from whatever part of it a reader
+ * chose to quote, and every other field must be quoted from inside that item in the same report.
  */
 function gateItem(docs: readonly Doc[], doc: string, reading: ItemReading): Item {
   const line = { name: `item ${reading.number}`, pattern: new RegExp(`^${reading.number}\\.\\s`) };
-  const item = { doc, page: reading.kind.cite.page, within: reading.kind.cite.span };
+  const printed = printedItem(docs, doc, reading.kind.cite.page, reading.number);
+  const item = { doc, page: reading.kind.cite.page, within: printed ?? "" };
+  const kind: Checked<LienKind> =
+    printed === null
+      ? { ...reading.kind, status: "unsupported", reason: `page ${reading.kind.cite.page} of "${doc}" prints no item ${reading.number}` }
+      : checkLabel(docs, reading.kind, kindOf, { doc, label: line, whole: printed });
   return {
     number: reading.number,
-    kind: checkLabel(docs, reading.kind, kindOf, { doc, label: line }),
+    kind,
     ...(reading.recorded ? { recorded: checkDate(docs, reading.recorded, { ...item, label: LABELS.recorded }) } : {}),
     ...(reading.instrument ? { instrument: checkText(docs, reading.instrument, { ...item, label: LABELS.instrument }) } : {}),
     ...(reading.amount ? { amount: checkMoney(docs, reading.amount, { ...item, label: LABELS.amount }) } : {}),
@@ -100,7 +118,7 @@ function printedItems(doc: Doc): number[] {
   return doc.pages
     .filter((p) => /SCHEDULE B/i.test(p.text))
     .flatMap((p) => p.text.split("\n").flatMap((l) => {
-      const m = /^\s*(\d{1,2})\.\s/.exec(l);
+      const m = NUMBERED.exec(l);
       return m ? [Number(m[1])] : [];
     }));
 }
@@ -285,6 +303,12 @@ export function checkTitle(docs: readonly Doc[], reading: TitleReading, request:
   checks.push(rule("no-tax-or-judgment", taxOrJudgment.status, taxOrJudgment.because));
   const reverse = absent(title, staying, (l) => l.kind === "reverse-mortgage", "a reverse mortgage");
   checks.push(rule("no-reverse-mortgage", reverse.status, reverse.because));
+  const unrated = absent(title, liens, (l) => l.kind === "other-lien", "a recorded lien these rules don't rate");
+  checks.push(
+    unrated.status === "fail"
+      ? rule("no-unrated-lien", "unknown", `${unrated.because}; a person decides whether it is released, paid or subordinated`)
+      : rule("no-unrated-lien", unrated.status, unrated.because),
+  );
 
   const owedOnLiens = title.decided ? add(sum(mortgages.map((l) => l.balance)), title.complete ? ZERO : UNBACKED) : UNBACKED;
   const cltv = percentOf(add(owedOnLiens, request.amount), request.homeValue);

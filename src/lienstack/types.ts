@@ -9,23 +9,30 @@ export type LienKind =
   | "judgment"
   | "subordination"
   | "property-taxes"
+  | "other-lien"
   | "other";
 
 export const MORTGAGE_KINDS: readonly LienKind[] = ["deed-of-trust", "credit-line-deed-of-trust", "reverse-mortgage"];
 
 /**
  * What a Schedule B item is, decided from its printed text. Order matters: a reverse mortgage and
- * a subordination agreement both mention a deed of trust, and the coming year's property taxes are
- * printed as "a lien not yet due or payable", which is not the recorded tax lien the rules mean.
+ * a subordination agreement both mention a deed of trust, covenants often mention "the lien of any
+ * deed of trust" without being one, and the coming year's property taxes are printed as "a lien not
+ * yet due or payable", which is not the recorded tax lien the rules mean. A lien none of the rules
+ * name (a mechanic's lien, an association lien, a lis pendens) is "other-lien", never "other";
+ * the printed exception for liens "not shown by the public records" is not a recorded lien.
  */
 export function kindOf(text: string): LienKind {
   const t = text.toLowerCase();
+  const lead = t.replace(/^\s*\d{1,2}\.\s*/, "").replace(/^(?:an?|the)\s+/, "");
+  if (/^(?:easements?|covenants|conditions and restrictions|restrictions)\b/.test(lead) || /not shown by the public records/.test(t)) return "other";
   if (/\btaxes\b/.test(t) && /not yet due/.test(t)) return "property-taxes";
   if (/subordination agreement/.test(t)) return "subordination";
   if (/home equity conversion|reverse mortgage/.test(t)) return "reverse-mortgage";
   if (/tax lien/.test(t)) return "tax-lien";
   if (/abstract of judgment|\bjudgment\b/.test(t)) return "judgment";
   if (/deed of trust|\bmortgage\b/.test(t)) return /line of credit|credit line|revolving/.test(t) ? "credit-line-deed-of-trust" : "deed-of-trust";
+  if (/\bliens?\b|lis pendens|pendency of action/.test(t)) return "other-lien";
   return "other";
 }
 
@@ -82,7 +89,7 @@ export interface LienPolicy {
   readonly notReadHere: readonly string[];
 }
 
-export type RuleId = "title" | "second-position" | "first-seasoned" | "no-senior-heloc" | "no-tax-or-judgment" | "no-reverse-mortgage" | "cltv";
+export type RuleId = "title" | "second-position" | "first-seasoned" | "no-senior-heloc" | "no-tax-or-judgment" | "no-reverse-mortgage" | "no-unrated-lien" | "cltv";
 
 export interface Check {
   readonly id: RuleId;

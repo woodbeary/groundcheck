@@ -110,6 +110,10 @@ describe("citation gate", () => {
     assert.equal(checkMoney(docs, rent, { page: 1 }).status, "unsupported");
     assert.equal(checkMoney(docs, rent, { within: "Term: 360 months" }).status, "unsupported");
     assert.equal(checkMoney(docs, rent, { doc: "d", page: 2, label: { name: "monthly rent", pattern: /monthly rent/i } }).status, "supported");
+    const runsOn = checkMoney(docs, { ...rent, cite: cite(2, "Monthly Rent: $2,450.00 Term: 360 months") }, { label: { name: "monthly rent", pattern: /monthly rent/i } });
+    assert.equal(runsOn.status, "unsupported");
+    assert.match(runsOn.reason ?? "", /runs past the monthly rent line/);
+    assert.equal(checkMoney(docs, rent, { whole: "Monthly Rent: $2,450.00 Term: 360 months" }).status, "unsupported");
   });
 
   it("lets code, not the reader, decide a label", () => {

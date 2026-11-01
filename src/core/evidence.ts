@@ -67,8 +67,16 @@ function verdict<T>(claim: Claim<T>, status: Status, reason?: string): Checked<T
 export interface Expect {
   readonly doc?: string;
   readonly page?: number;
+  /** The quote must print this label, and sit on one printed line unless `within` or `whole` scopes it. */
   readonly label?: { readonly name: string; readonly pattern: RegExp };
+  /** The quote must sit inside this text (an item's printed lines). */
   readonly within?: string;
+  /** The quote must be all of this text, so a label is never read from part of an item. */
+  readonly whole?: string;
+}
+
+function onOneLine(page: Page, span: string): boolean {
+  return page.text.split("\n").some((line) => squash(line).includes(span));
 }
 
 /** The cited span, if it is printed on the cited page where it is expected; otherwise why not. */
@@ -83,7 +91,11 @@ function locate(docs: readonly Doc[], cite: Cite, expect: Expect): { span: strin
   if (!span) return { missing: "the citation quotes no text" };
   if (!squash(page.text).includes(span)) return { missing: `the quoted text is not on page ${cite.page}` };
   if (expect.label && !expect.label.pattern.test(span)) return { missing: `the quoted text is not a ${expect.label.name} line` };
+  if (expect.whole !== undefined && span !== squash(expect.whole)) return { missing: "the quote is only part of the item; its kind is read from all of it" };
   if (expect.within !== undefined && !squash(expect.within).includes(span)) return { missing: "the quote is not from the item it describes" };
+  if (expect.label && expect.within === undefined && expect.whole === undefined && !onOneLine(page, span)) {
+    return { missing: `the quote runs past the ${expect.label.name} line` };
+  }
   return { span };
 }
 

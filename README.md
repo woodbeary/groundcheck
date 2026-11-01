@@ -3,10 +3,11 @@
 Two loan-file checks that take no value on a reader's word.
 
 - **lienstack** reads a preliminary title report's Schedule B and the mortgage statements in a
-  file, then checks the lien conditions a second-lien HELOC guide prints: the new line records second, behind a
-  first lien seasoned 12 months, with no senior line of credit, recorded tax lien, judgment or
-  reverse mortgage. Combined loan-to-value comes out as a range that only cited liens and cited
-  balances can narrow.
+  file, then checks the lien conditions a second-lien HELOC guide prints: the new line records
+  second, behind a first lien seasoned 12 months, with no senior line of credit, recorded tax
+  lien, judgment or reverse mortgage. A recorded lien those rules don't name (a mechanic's lien,
+  an association lien, a lis pendens) reads "can't tell" for a person, never "pass". Combined
+  loan-to-value comes out as a range that only cited liens and cited balances can narrow.
 - **dscr-check** routes a DSCR file's pages, reads the rent schedule, lease, note, tax bill,
   insurance declarations and association dues, and scores DSCR (qualifying rent ÷ PITIA) as a
   range against each overlay's floor. A missing lease, an expired policy or a garbled tax total
@@ -63,12 +64,15 @@ flowchart LR
 ```
 
 **The citation gate** (`src/core/evidence.ts`). A proposed value is *supported* only if the
-quoted text is on the cited page, sits on the line that labels that field (and, for a Schedule B
-item, inside that item's own numbered line), and prints exactly that value. If the quote prints
-something that can't be read as one value, the value is *held* with the reason and never
-repaired: a model that turns `$318400,000.00` into a clean `$400,000` and cites the right line
-still gets held, because the quoted line prints a token that can't be read as one amount and
-the gate won't choose a reading for it. Anything else is *unsupported*.
+quoted text is on the cited page, sits on the one printed line that labels that field (and, for
+a Schedule B item, inside that item's own numbered lines), and prints exactly that value. A
+quote that runs on into the next line is unsupported, so a balance can't be taken from the
+escrow line printed under it. An item's kind is read from the whole item as printed, never from
+the part a reader quotes, so quoting "4. A Notice of" can't make a federal tax lien read as
+harmless. If the quote prints something that can't be read as one value, the value is *held*
+with the reason and never repaired: a model that turns `$318400,000.00` into a clean `$400,000`
+and cites the right line still gets held, because the quoted line prints a token that can't be
+read as one amount and the gate won't choose a reading for it. Anything else is *unsupported*.
 Held and unsupported values leave the fact as wide as a missing page would.
 
 **Dates are judged on the request day.** Title reports, statements, rent schedules and
@@ -99,7 +103,7 @@ Two current documents that disagree widen to both values.
 
 ```bash
 pnpm install
-pnpm test                                        # 89 tests
+pnpm test                                        # 93 tests
 pnpm typecheck
 pnpm lienstack examples/title/title-03.json      # any file in examples/title
 pnpm dscr examples/dscr/dscr-02.json             # any file in examples/dscr
@@ -147,34 +151,37 @@ qualifying rent $0.00 to $3,900.00   PITIA $3,005.39   DSCR 0.000 to 1.298
 | `dscr-05` | Association dues on a statement | DSCR 1.097: A fail, B pass |
 | `dscr-06` | Printed payment its terms don't produce | can't tell (payment held) |
 
-For the HELOC engine, lienstack also returns `otherLoan`, `balance` and `otherBalance` in the
-shape that engine asks the borrower for. Unknown stays unknown, and an unknown balance is never
-zero.
+For the HELOC engine, lienstack also answers the three questions that engine asks the borrower
+(`balance`, `otherLoan`, `otherBalance`), read from the title and statements instead, with the
+balances as ranges. Unknown stays unknown, and an unknown balance is never zero.
 
 ## What was tested
 
 Measured in this repository, on synthetic files only:
 
-- **89 tests** with Node's test runner, passing on Node 22.22. CI runs typecheck, tests and the
+- **93 tests** with Node's test runner, passing on Node 22.22. CI runs typecheck, tests and the
   demo commands on Node 22 and 24. It hasn't run yet: the repository isn't on GitHub.
 - **Soundness.** For each of the 12 example files, every single page and every pair of pages is
   removed in turn. No check, verdict or overlay result may move anywhere but to "can't tell",
   and no range (CLTV, DSCR, each rent and PITIA part, the HELOC engine's balance facts) may
-  narrow. Three deliberate bugs
-  were each introduced by hand to confirm it catches them, then removed: passing "none" on an
-  incomplete report, ignoring the missing page in CLTV, and qualifying a missing lease on market
-  rent.
+  narrow. Three deliberate bugs were each introduced by hand to confirm it catches them, then
+  removed: passing "none" on an incomplete report, ignoring the missing page in CLTV, and
+  qualifying a missing lease on market rent.
 - **Gate.** Merged digits, two numbers in one token, footnote marks and merged dates are held;
-  a value quoted from the wrong document, page, line or Schedule B item is unsupported; a
-  reader's lien kind stands only if the printed text reads as the same kind.
+  a value quoted from the wrong document, page, line or Schedule B item, or from a quote that
+  runs past its labeled line, is unsupported; a reader's lien kind stands only if the whole
+  printed item reads as the same kind, so a clipped quote can't pass a tax lien or hide a line of
+  credit.
 - **Reader eval.** The reference reader gets 94 of 94 hand-keyed fields right on the six DSCR
   files, with 0 unsupported proposals and 1 held (the merged tax total, which the key says must
   be held). It was written for this repository's synthetic layout, so that number shows the
   harness works, not that anything reads real documents. The bar is pinned in
   `examples/dscr/eval-baseline.json`; a test reader that repairs garbles and fills in a missing
   lease fails it.
-- **Golden set.** Seven flagged bad outputs (`examples/dscr/bad-outputs.json`) are replayed
-  through the gate and must keep coming back held or unsupported.
+- **Golden set.** Seven hand-written bad outputs of the kind a reviewer flags
+  (`examples/dscr/bad-outputs.json`: repaired garbles, a lease filled from market rent, a value
+  read off a page routed to a person) are replayed through the gate and must keep coming back
+  held or unsupported.
 - **Fixture lint.** No SSN-, account-, email- or phone-shaped strings in `examples/`, and every
   example is marked synthetic. The loader refuses a file that isn't.
 
@@ -191,10 +198,16 @@ extractor, any loan origination system.
   (rev. 2025-01-22, pp. 6–8). The 60-day title and statement limits are example settings.
   It does not read forbearance, negative amortization, balloons, private first liens or
   vesting history; each report lists them as not read. It doesn't match reconveyances, read
-  delinquent property taxes, or count an existing line at its full limit.
+  delinquent property taxes, or count an existing line at its full limit. Lien kinds come from
+  the item's printed phrases (`kindOf`), written for this layout; a real report's wording needs
+  its own cases.
 - dscr-check covers a single-unit property with a fixed-rate, fully amortizing note. No vacancy
   factor, flood insurance, short-term rental income, reserves, LTV or credit tiers. The two
-  overlays and the policy ages are fictional settings.
+  overlays and the policy ages are fictional settings. Each part needs at least one cited,
+  current document, but a reader that skips a second document of a kind it already read (a
+  second lease, or an association statement beside a rent schedule that prints "Association
+  Dues: None") isn't caught; only lienstack's Schedule B makes the reader account for every
+  item.
 - An Encompass export (a typed map of the loan fields a DSCR file needs) and an Ocrolus
   Classify/Capture adapter behind `Router` and `DscrReader` are not written. They need an
   Encompass sandbox and Ocrolus API access to contract-test against; until then nothing here

@@ -39,6 +39,7 @@ const L = {
   premium: label("annual premium", /Annual Premium/i),
   duesDate: label("statement date", /Statement Date/i),
   dues: label("monthly assessment", /Monthly Assessment/i),
+  noDues: label("association dues", /Association Dues/i),
 };
 
 const LEGAL: readonly PageClass[] = ["LEGAL_DOCUMENT"];
@@ -116,7 +117,7 @@ export function checkDscr(
       current: age !== null && age >= 0 && age <= policy.maxAppraisalAgeDays,
       effective,
       rent: g.money(a.marketRent, a.doc, RENT, L.marketRent),
-      noDues: g.run(a.noDues, RENT, (c) => checkLabel(docs, c, duesLine, { doc: a.doc })),
+      noDues: g.run(a.noDues, RENT, (c) => checkLabel(docs, c, duesLine, { doc: a.doc, label: L.noDues })),
     };
   });
   const currentAppraisals = appraisals.filter((a) => a.current);

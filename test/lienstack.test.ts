@@ -17,6 +17,10 @@ describe("kindOf", () => {
     assert.equal(kindOf("A Subordination Agreement wherein the Deed of Trust recorded as Instrument No. 1"), "subordination");
     assert.equal(kindOf("A Deed of Trust to secure an indebtedness in the amount of $412,000.00"), "deed-of-trust");
     assert.equal(kindOf("2. Easement for public utilities, recorded June 2, 1987"), "other");
+    assert.equal(kindOf("4. Covenants, conditions and restrictions, which provide that a violation shall not defeat the lien of any deed of trust"), "other");
+    assert.equal(kindOf("4. A Mechanic's Lien for $23,400.00, recorded August 3, 2026"), "other-lien");
+    assert.equal(kindOf("4. A Notice of Pendency of Action recorded August 3, 2026"), "other-lien");
+    assert.equal(kindOf("5. Any lien, or right to a lien, for services, labor or material not shown by the public records."), "other");
   });
 });
 
@@ -128,6 +132,18 @@ describe("lienstack rules on printed text", () => {
     assert.equal(status(line, "no-senior-heloc"), "fail");
   });
 
+  it("can't pass a recorded lien its rules don't name, and won't read covenants as a deed of trust", () => {
+    const mechanics = lienstack(
+      edit(title("title-01"), "4. Covenants", "4. A Mechanic's Lien for $23,400.00, recorded August 3, 2026 as Instrument No. 2026-0301122. Claimant: Fixture Roofing Co.\n5. Covenants"),
+    );
+    assert.equal(status(mechanics, "no-unrated-lien"), "unknown");
+    assert.match(mechanics.checks.find((c) => c.id === "no-unrated-lien")!.because, /item 4: a recorded lien these rules don't rate/);
+    assert.equal(mechanics.verdict, "unknown");
+    const covenants = lienstack(edit(title("title-01"), "Instrument No. 1986-0031177.", "Instrument No. 1986-0031177, which provide that a violation shall not defeat the lien of any deed of trust."));
+    assert.equal(status(covenants, "second-position"), "pass");
+    assert.equal(covenants.verdict, "pass");
+  });
+
   it("won't take recording order on faith when a subordination agreement is recorded", () => {
     const r = lienstack(
       edit(title("title-01"), "4. Covenants", "4. A Subordination Agreement recorded April 2, 2021 as Instrument No. 2021-0140001 affecting the Deed of Trust recorded as Instrument No. 2021-0123456.\n5. Covenants"),
@@ -176,6 +192,64 @@ describe("lienstack rules on printed text", () => {
     const r = lienstack(title("title-01"), borrows);
     assert.equal(r.problems.find((p) => p.field === "item 2 recorded" && p.status === "unsupported")?.reason, "the quote is not from the item it describes");
     assert.equal(status(r, "first-seasoned"), "unknown");
+  });
+
+  it("reads an item's kind from the whole item, not the part a reader chose to quote", () => {
+    const clips: TitleReader = (docs) => {
+      const reading = readTitle(docs);
+      return {
+        ...reading,
+        reports: reading.reports.map((rep) => ({
+          ...rep,
+          items: rep.items.map((item) => {
+            if (item.number < 4) return item;
+            const span = item.kind.cite.span.split(" ").slice(0, 4).join(" ");
+            return { number: item.number, kind: { ...item.kind, value: kindOf(span), cite: { ...item.kind.cite, span } } };
+          }),
+        })),
+      };
+    };
+    const r = lienstack(title("title-05"), clips);
+    assert.equal(status(r, "no-tax-or-judgment"), "unknown");
+    assert.notEqual(r.verdict, "pass");
+    assert.match(r.problems.find((p) => p.field === "item 4 kind")?.reason ?? "", /only part of the item/);
+  });
+
+  it("reads an item that wraps onto a second line as one item", () => {
+    const wrapped = edit(title("title-01"), "3. A Deed of Trust to secure", "3. A Deed of Trust\n(Line of Credit) to secure");
+    const firstLineOnly = lienstack(wrapped);
+    assert.equal(status(firstLineOnly, "no-senior-heloc"), "unknown");
+    assert.notEqual(firstLineOnly.verdict, "pass");
+    const wholeItem: TitleReader = (docs) => {
+      const reading = readTitle(docs);
+      const page = docs.find((d) => d.id === "prelim")!.pages.find((p) => p.n === 2)!;
+      const span = page.text.split("\n").slice(3, 5).join("\n");
+      return {
+        ...reading,
+        reports: reading.reports.map((rep) => ({
+          ...rep,
+          items: rep.items.map((item) => (item.number === 3 ? { number: 3, kind: { ...item.kind, value: kindOf(span), cite: { ...item.kind.cite, span } } } : item)),
+        })),
+      };
+    };
+    assert.equal(status(lienstack(wrapped, wholeItem), "no-senior-heloc"), "fail");
+  });
+
+  it("won't take a balance from the line after the one that labels it", () => {
+    const file = edit(title("title-01"), "Unpaid Principal Balance: $371,218.40", "Unpaid Principal Balance: $371,218.40\nEscrow Balance: $2,000.00");
+    const runsOn: TitleReader = (docs) => {
+      const reading = readTitle(docs);
+      return {
+        ...reading,
+        statements: reading.statements.map((s) =>
+          s.balance ? { ...s, balance: { ...s.balance, value: 2_000, cite: { ...s.balance.cite, span: "Unpaid Principal Balance: $371,218.40 Escrow Balance: $2,000.00" } } } : s,
+        ),
+      };
+    };
+    const r = lienstack(file, runsOn);
+    assert.match(r.problems.find((p) => p.field === "principal balance")?.reason ?? "", /runs past the principal balance line/);
+    assert.equal(status(r, "cltv"), "unknown");
+    assert.equal(r.cltv.hi, Infinity);
   });
 
   it("ties a statement to a lien only by its recorded amount, and holds a balance above it", () => {

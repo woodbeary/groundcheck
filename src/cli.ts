@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { scoreReader, type HandKeyed } from "./dscr/eval.ts";
 import { dscrCheck, type DscrRequest } from "./dscr/index.ts";
-import { lienstack, type LienRequest } from "./lienstack/index.ts";
+import { MORTGAGE_KINDS, lienstack, type LienRequest } from "./lienstack/index.ts";
 
 const money = dollars;
 const pct = (n: number) => `${n.toFixed(2)}%`;
@@ -19,7 +19,7 @@ function printLiens(path: string): void {
   console.log("\nliens");
   for (const l of r.liens) {
     console.log(`  item ${l.item}  ${l.kind}  ${l.instrument ?? "instrument not backed"}  recorded ${l.recorded ?? "not backed"}  amount ${l.amount === null ? "not backed" : money(l.amount)}  ${l.stays === "yes" ? "" : l.stays}`);
-    if (l.kind !== "tax-lien" && l.kind !== "judgment") console.log(`    balance ${range(l.balance, money)}  (${l.balanceBecause})`);
+    if (MORTGAGE_KINDS.includes(l.kind)) console.log(`    balance ${range(l.balance, money)}  (${l.balanceBecause})`);
   }
   if (r.problems.length) {
     console.log("\nheld or unsupported");
