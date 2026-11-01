@@ -268,7 +268,7 @@ deployment would host both in its own cloud tenant.
 
 ```bash
 pnpm install
-pnpm test                                             # 259 tests
+pnpm test                                             # 260 tests
 pnpm typecheck
 pnpm lienstack examples/title/title-03.json           # any file in examples/title or examples/title-b
 pnpm lienstack examples/title/title-01.json --as-of 2026-12-15
@@ -324,7 +324,7 @@ doesn't call it yet.
 
 ## What was tested
 
-Measured in this repository, on synthetic files only, on Node 22.22: 259 tests with Node's test
+Measured in this repository, on synthetic files only, on Node 22.22: 260 tests with Node's test
 runner, all passing, and a clean typecheck. Beyond the soundness and eval tests above:
 
 - **Gate.** Merged digits, two numbers in one token, footnote marks and merged dates are held; a

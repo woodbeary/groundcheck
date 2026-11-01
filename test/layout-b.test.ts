@@ -80,3 +80,21 @@ describe("layout B: ALTA-style commitments from a second generator", () => {
     assert.equal(r.checks.find((c) => c.id === "first-seasoned")?.status, "unknown");
   });
 });
+
+describe("section headers are printed headers, not words inside an item", () => {
+  it("keeps a wrapped standard exception that mentions 'Schedule B, Part I-Requirements' as one item, in Part II", () => {
+    const g = generated.find((x) => x.id === "alta-01")!;
+    const file = load(g);
+    const wrapped = {
+      ...file,
+      docs: file.docs.map((d) => ({
+        ...d,
+        pages: d.pages.map((p) => ({ ...p, text: p.text.replace("between the Commitment Date and the date on which all of the Schedule B, Part I-Requirements are met.", "between the Commitment Date and the date on which all of the\n   Schedule B, Part I-Requirements are met.") })),
+      })),
+    };
+    const quote = "1. Any defect, lien, encumbrance, adverse claim, or other matter that appears for the first time in the Public Records or is created, attaches, or is disclosed between the Commitment Date and the date on which all of the Schedule B, Part I-Requirements are met.";
+    const r = lienstack(wrapped, () => fromProposals(g.ideal.map((i) => (i.field === "item 1 kind" ? { ...i, quote } : i))));
+    assert.equal(r.claims.find((c) => c.field === "item 1 kind")?.status, "supported");
+    assert.equal(r.verdict, "pass");
+  });
+});

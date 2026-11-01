@@ -85,14 +85,15 @@ const NUMBERED = /^\s*(\d{1,2})\.\s/;
 /**
  * Where a page is in a title report. A preliminary report prints "SCHEDULE B" over its items; a
  * commitment prints Schedule A, then Schedule B Part I (requirements) and Part II (exceptions),
- * each numbered from 1. Only exceptions are the items a lien rule reads.
+ * each numbered from 1. Only exceptions are the items a lien rule reads. Headers print in capitals;
+ * an item's own words ("all of the Schedule B, Part I-Requirements are met") are not a header.
  */
 const SECTIONS: readonly { section: "exceptions" | "requirements" | "other" | "none"; pattern: RegExp }[] = [
   { section: "none", pattern: /^\s*END OF SCHEDULE B|Page\s+\d+\s+of\s+\d+|This page is only a part of/i },
-  { section: "exceptions", pattern: /SCHEDULE B,?\s*PART II\b/i },
-  { section: "requirements", pattern: /SCHEDULE B,?\s*PART I\b/i },
-  { section: "other", pattern: /SCHEDULE A\b/i },
-  { section: "exceptions", pattern: /SCHEDULE B\b/i },
+  { section: "exceptions", pattern: /SCHEDULE B,?\s*PART II\b/ },
+  { section: "requirements", pattern: /SCHEDULE B,?\s*PART I\b/ },
+  { section: "other", pattern: /SCHEDULE A\b/ },
+  { section: "exceptions", pattern: /SCHEDULE B\b/ },
 ];
 
 interface PrintedItem {
