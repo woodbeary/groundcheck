@@ -14,7 +14,11 @@
     "typecheck": "tsc --noEmit",
     "lienstack": "node src/cli.ts lienstack",
     "dscr": "node src/cli.ts dscr",
-    "eval": "node src/cli.ts eval"
+    "eval": "node src/cli.ts eval",
+    "demo:encompass": "node scripts/encompass-demo.ts",
+    "layout-b": "node scripts/layout-b.ts --write",
+    "simulate": "node scripts/simulate.ts --write",
+    "record": "node scripts/record.ts"
   },
   "devDependencies": {
     "@types/node": "22.20.5",
