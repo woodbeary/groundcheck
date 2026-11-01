@@ -16,6 +16,7 @@ import {
   checkLabel,
   checkMoney,
   checkPercent,
+  gated,
   type Checked,
   type Claim,
   type Doc,
@@ -75,7 +76,7 @@ class Gate {
       r && classes.includes(r.cls)
         ? check(claim)
         : { ...claim, status: "unsupported", reason: r ? `page ${r.page} of "${r.doc}" was routed ${r.cls}` : "the cited page is not in the file" };
-    this.claims.push({ field: result.field, doc: result.cite.doc, page: result.cite.page, status: result.status, value: result.value });
+    this.claims.push(gated(result));
     if (result.status !== "supported") {
       this.problems.push({ field: result.field, doc: result.cite.doc, page: result.cite.page, status: result.status, reason: result.reason ?? "" });
     }

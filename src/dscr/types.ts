@@ -1,4 +1,4 @@
-import type { Claim, Doc, Page } from "../core/evidence.ts";
+import type { Claim, Doc, GatedClaim, Page } from "../core/evidence.ts";
 import type { Interval, Tri } from "../core/interval.ts";
 
 /** The seven page classes from the December 2025 router. UNCERTAIN goes to a person. */
@@ -103,14 +103,7 @@ export interface Problem {
   readonly reason: string;
 }
 
-/** Every proposed value and what the gate made of it, before any cross-check. */
-export interface GatedClaim {
-  readonly field: string;
-  readonly doc: string;
-  readonly page: number;
-  readonly status: "supported" | "held" | "unsupported";
-  readonly value: unknown;
-}
+export type { GatedClaim } from "../core/evidence.ts";
 
 export interface DscrReport {
   readonly file: string;

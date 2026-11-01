@@ -1,4 +1,4 @@
-import type { Claim, Doc } from "../core/evidence.ts";
+import type { Claim, Doc, GatedClaim } from "../core/evidence.ts";
 import type { Interval, Tri } from "../core/interval.ts";
 
 export type LienKind =
@@ -133,6 +133,8 @@ export interface LienReport {
   readonly report: { readonly current: string | null; readonly effective: string | null; readonly superseded: readonly string[] };
   readonly liens: readonly LienView[];
   readonly problems: readonly Problem[];
+  /** Every value the reader proposed for the current report and the statements, as the gate decided it. */
+  readonly claims: readonly GatedClaim[];
   readonly checks: readonly Check[];
   readonly cltv: Interval;
   readonly verdict: Tri;

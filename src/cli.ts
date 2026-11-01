@@ -1,4 +1,6 @@
+import { appendRun } from "./core/audit.ts";
 import { dayNumber } from "./core/dates.ts";
+import { VERSION } from "./core/version.ts";
 import { loadFile, type LoanFile } from "./core/file.ts";
 import { dollars } from "./core/format.ts";
 import { formatInterval, type Interval } from "./core/interval.ts";
@@ -16,6 +18,12 @@ const mark = { pass: "PASS   ", fail: "FAIL   ", unknown: "CAN'T TELL" } as cons
 interface Flags {
   readonly asOf?: string;
   readonly json: boolean;
+  /** Append one provenance row per gated claim to this JSONL file. */
+  readonly audit?: string;
+}
+
+function audit(flags: Flags, check: string, r: { file: string; sha256: string; claims: Parameters<typeof appendRun>[1]["claims"] }): void {
+  if (flags.audit) appendRun(flags.audit, { check, file: r.file, sha256: r.sha256, claims: r.claims }, { reader: "reference", version: VERSION, promptSha: null });
 }
 
 /** The file as given, judged on another day when `--as-of` names one. */
@@ -31,6 +39,7 @@ function json(value: unknown): string {
 
 function printLiens(path: string, flags: Flags): void {
   const r = lienstack(load<LienRequest>(path, flags));
+  audit(flags, "lienstack", r);
   if (flags.json) return void console.log(json(r));
   console.log(`lienstack ${r.file}  as of ${r.asOf}  policy ${r.policy}`);
   console.log(`file sha256 ${r.sha256}`);
@@ -55,6 +64,7 @@ function printLiens(path: string, flags: Flags): void {
 
 function printDscr(path: string, flags: Flags): void {
   const r = dscrCheck(load<DscrRequest>(path, flags));
+  audit(flags, "dscr-check", r);
   if (flags.json) return void console.log(json(r));
   const ratio = (n: number) => n.toFixed(3);
   console.log(`dscr-check ${r.file}  as of ${r.asOf}  policy ${r.policy}`);
@@ -82,7 +92,7 @@ function printEval(dir: string): void {
   console.log(`  accuracy ${(s.accuracy * 100).toFixed(1)}%  unsupported rate ${(s.unsupportedRate * 100).toFixed(1)}%  held rate ${(s.heldRate * 100).toFixed(1)}%`);
 }
 
-const USAGE = "groundcheck usage: node src/cli.ts lienstack <file.json> | dscr <file.json> [--as-of YYYY-MM-DD] [--json] | eval [dir]";
+const USAGE = "groundcheck usage: node src/cli.ts lienstack <file.json> | dscr <file.json> [--as-of YYYY-MM-DD] [--json] [--audit log.jsonl] | eval [dir]";
 
 function fail(message: string): void {
   console.error(message);
@@ -93,6 +103,7 @@ const args = process.argv.slice(2);
 const positional: string[] = [];
 let asOf: string | undefined;
 let asJson = false;
+let auditPath: string | undefined;
 let bad: string | undefined;
 for (let i = 0; i < args.length; i += 1) {
   const arg = args[i]!;
@@ -101,10 +112,14 @@ for (let i = 0; i < args.length; i += 1) {
     asOf = args[i + 1];
     i += 1;
     if (asOf === undefined || dayNumber(asOf) === null) bad = `--as-of needs a real day as YYYY-MM-DD, not "${asOf ?? ""}"`;
+  } else if (arg === "--audit") {
+    auditPath = args[i + 1];
+    i += 1;
+    if (!auditPath) bad = "--audit needs a file path";
   } else if (arg.startsWith("--")) bad = `unknown flag ${arg}`;
   else positional.push(arg);
 }
-const flags: Flags = asOf === undefined ? { json: asJson } : { asOf, json: asJson };
+const flags: Flags = { json: asJson, ...(asOf === undefined ? {} : { asOf }), ...(auditPath === undefined ? {} : { audit: auditPath }) };
 const [command, path] = positional;
 if (bad) fail(`${bad}\n${USAGE}`);
 else if (command === "lienstack" && path) printLiens(path, flags);

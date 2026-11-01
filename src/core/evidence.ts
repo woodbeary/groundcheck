@@ -48,6 +48,22 @@ export interface Checked<T> {
   readonly reason?: string;
 }
 
+/** Every proposed value and what the gate made of it, with the line it quoted: one audit row each. */
+export interface GatedClaim {
+  readonly field: string;
+  readonly doc: string;
+  readonly page: number;
+  readonly quote: string;
+  readonly status: Status;
+  readonly value: unknown;
+  readonly reason?: string;
+}
+
+export function gated(checked: Checked<unknown>): GatedClaim {
+  const base = { field: checked.field, doc: checked.cite.doc, page: checked.cite.page, quote: checked.cite.span, status: checked.status, value: checked.value };
+  return checked.reason === undefined ? base : { ...base, reason: checked.reason };
+}
+
 export function backed<T>(checked: Checked<T> | undefined): T | null {
   return checked?.status === "supported" ? checked.value : null;
 }

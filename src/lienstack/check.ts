@@ -17,8 +17,10 @@ import {
   checkLabel,
   checkMoney,
   checkText,
+  gated,
   wholeness,
   type Checked,
+  type GatedClaim,
   type Doc,
 } from "../core/evidence.ts";
 import { UNBACKED, ZERO, add, all, atMost, hull, inside, percentOf, point, sum, type Interval, type Tri } from "../core/interval.ts";
@@ -168,12 +170,15 @@ interface StatementFact {
   readonly balance: number;
 }
 
-function currentStatements(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy, problems: Problem[]): StatementFact[] {
+function currentStatements(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy, problems: Problem[], claims: GatedClaim[]): StatementFact[] {
   return reading.statements.flatMap((s) => {
     const date = s.date ? checkDate(docs, s.date, { doc: s.doc, label: LABELS.statementDate }) : undefined;
     const original = s.original ? checkMoney(docs, s.original, { doc: s.doc, label: LABELS.original }) : undefined;
     const balance = s.balance ? checkMoney(docs, s.balance, { doc: s.doc, label: LABELS.balance }) : undefined;
-    for (const c of [date, original, balance]) note(problems, c);
+    for (const c of [date, original, balance]) {
+      note(problems, c);
+      if (c) claims.push(gated(c));
+    }
     const d = backed(date);
     const o = backed(original);
     const b = backed(balance);
@@ -244,11 +249,18 @@ function absent(title: TitleState, liens: readonly Lien[], bad: (l: Lien) => boo
 
 export function checkTitle(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy, file = "file", sha256 = ""): LienReport {
   const problems: Problem[] = [];
+  const claims: GatedClaim[] = [];
   const title = titleState(docs, reading, request, policy);
   const report = title.report;
+  for (const r of reading.reports) if (r.effective) claims.push(gated(checkDate(docs, r.effective, { doc: r.doc, label: LABELS.effective })));
   const items = report ? report.items.map((r) => gateItem(docs, report.doc, r)).sort((a, b) => a.number - b.number) : [];
-  for (const item of items) for (const c of [item.kind, item.recorded, item.instrument, item.amount, item.holder]) note(problems, c);
-  const statements = currentStatements(docs, reading, request, policy, problems);
+  for (const item of items) {
+    for (const c of [item.kind, item.recorded, item.instrument, item.amount, item.holder]) {
+      note(problems, c);
+      if (c) claims.push(gated(c));
+    }
+  }
+  const statements = currentStatements(docs, reading, request, policy, problems, claims);
 
   const payoff = new Set(request.payoff ?? []);
   const typed = items.filter((item) => item.kind.status === "supported" && item.kind.value !== "other" && item.kind.value !== "property-taxes");
@@ -344,6 +356,7 @@ export function checkTitle(docs: readonly Doc[], reading: TitleReading, request:
       balanceBecause: l.balanceBecause,
     })),
     problems,
+    claims,
     checks,
     cltv,
     verdict: all(checks.map((c) => c.status)),
