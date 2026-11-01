@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import type { Doc } from "./evidence.ts";
 
@@ -5,6 +6,8 @@ import type { Doc } from "./evidence.ts";
 export interface LoanFile<R> {
   readonly id: string;
   readonly synthetic: true;
+  /** SHA-256 of the file as read, printed in every report so a result can be tied to its input. */
+  readonly sha256: string;
   readonly request: R;
   readonly docs: readonly Doc[];
 }
@@ -32,20 +35,29 @@ function isRaw(value: unknown): value is RawFile {
   );
 }
 
-/** Only files marked synthetic are accepted, so a real loan file can't be dropped in by accident. */
-export function parseFile<R>(value: unknown): LoanFile<R> {
+export function sha256(bytes: string | Uint8Array): string {
+  return createHash("sha256").update(bytes).digest("hex");
+}
+
+/**
+ * Only files marked synthetic are accepted, so a real loan file can't be dropped in by accident.
+ * `source` is the text the value was parsed from; without it the hash is of the value's JSON.
+ */
+export function parseFile<R>(value: unknown, source?: string): LoanFile<R> {
   if (!isRaw(value)) throw new Error("not a loan file: expected { id, synthetic, request, docs[{ id, pages[{ n, lines }] }] }");
   if (value.synthetic !== true) throw new Error(`${value.id}: only synthetic files are accepted`);
   return {
     id: value.id,
     synthetic: true,
+    sha256: sha256(source ?? JSON.stringify(value)),
     request: value.request as R,
     docs: value.docs.map((d) => ({ id: d.id, pages: d.pages.map((p) => ({ n: p.n, text: p.lines.join("\n") })) })),
   };
 }
 
 export function loadFile<R>(path: string): LoanFile<R> {
-  return parseFile<R>(JSON.parse(readFileSync(path, "utf8")));
+  const source = readFileSync(path, "utf8");
+  return parseFile<R>(JSON.parse(source), source);
 }
 
 /** The same file with some physical pages gone, as if they never arrived. */

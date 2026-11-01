@@ -105,6 +105,7 @@ export function checkDscr(
   policy: DscrPolicy,
   overlays: readonly Overlay[],
   file = "file",
+  sha256 = "",
 ): DscrReport {
   const g = new Gate(docs, routed);
   const asOf = request.asOf;
@@ -232,6 +233,7 @@ export function checkDscr(
   const dscr = ratio(rent, pitia);
   return {
     file,
+    sha256,
     asOf,
     policy: policy.id,
     routed,

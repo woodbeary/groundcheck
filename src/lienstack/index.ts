@@ -11,5 +11,5 @@ export { MORTGAGE_KINDS, kindOf } from "./types.ts";
 export type * from "./types.ts";
 
 export function lienstack(file: LoanFile<LienRequest>, reader: TitleReader = readTitle, policy: LienPolicy = SECOND_LIEN_PUBLIC): LienReport {
-  return checkTitle(file.docs, reader(file.docs), file.request, policy, file.id);
+  return checkTitle(file.docs, reader(file.docs), file.request, policy, file.id, file.sha256);
 }

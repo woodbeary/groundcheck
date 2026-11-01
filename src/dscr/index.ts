@@ -23,5 +23,5 @@ export function dscrCheck(file: LoanFile<DscrRequest>, options: DscrOptions = {}
   const policy = options.policy ?? EXAMPLE_POLICY;
   const routed = route(file.docs, options.router ?? keywordRouter, policy.routerFloor);
   const reading = (options.reader ?? readDscr)(file.docs, routed);
-  return checkDscr(file.docs, routed, reading, file.request, policy, options.overlays ?? OVERLAYS, file.id);
+  return checkDscr(file.docs, routed, reading, file.request, policy, options.overlays ?? OVERLAYS, file.id, file.sha256);
 }

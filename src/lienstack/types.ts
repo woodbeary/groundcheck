@@ -126,6 +126,8 @@ export interface HelocFacts {
 
 export interface LienReport {
   readonly file: string;
+  /** SHA-256 of the input file. */
+  readonly sha256: string;
   readonly asOf: string;
   readonly policy: string;
   readonly report: { readonly current: string | null; readonly effective: string | null; readonly superseded: readonly string[] };

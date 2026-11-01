@@ -242,7 +242,7 @@ function absent(title: TitleState, liens: readonly Lien[], bad: (l: Lien) => boo
   return title.complete ? { status: "pass", because: `none on ${title.because}` } : { status: "unknown", because: `none visible, but ${title.because}` };
 }
 
-export function checkTitle(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy, file = "file"): LienReport {
+export function checkTitle(docs: readonly Doc[], reading: TitleReading, request: LienRequest, policy: LienPolicy, file = "file", sha256 = ""): LienReport {
   const problems: Problem[] = [];
   const title = titleState(docs, reading, request, policy);
   const report = title.report;
@@ -328,6 +328,7 @@ export function checkTitle(docs: readonly Doc[], reading: TitleReading, request:
 
   return {
     file,
+    sha256,
     asOf: request.asOf,
     policy: policy.id,
     report: { current: title.report?.doc ?? null, effective: title.effective, superseded: title.superseded },

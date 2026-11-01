@@ -114,6 +114,8 @@ export interface GatedClaim {
 
 export interface DscrReport {
   readonly file: string;
+  /** SHA-256 of the input file. */
+  readonly sha256: string;
   readonly asOf: string;
   readonly policy: string;
   readonly routed: readonly Routed[];
