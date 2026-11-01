@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { Doc } from "../src/core/evidence.ts";
-import { allPages, withoutPages, type LoanFile } from "../src/core/file.ts";
+import { allPages, parseFile, withoutPages, type LoanFile } from "../src/core/file.ts";
 import type { Interval, Tri } from "../src/core/interval.ts";
 import { dscrCheck, type DscrRequest } from "../src/dscr/index.ts";
 import { lienstack, type LienReport, type LienRequest } from "../src/lienstack/index.ts";
+import { fromProposals } from "../src/readers/proposals.ts";
+import { layoutB, render } from "../scripts/layout-b.ts";
 import { examples } from "./helpers.ts";
 
 /** Losing information may turn a result into "can't tell". It may never turn it into anything else. */
@@ -182,6 +184,32 @@ describe("soundness: the order Schedule B items are printed in changes nothing",
       const shuffled = reversedItems(file);
       assert.notDeepEqual(shuffled.docs, file.docs);
       assert.deepEqual(result(lienstack(shuffled)), result(lienstack(file)));
+    });
+  }
+});
+
+/**
+ * Layout B through a reader that proposes exactly what each commitment prints (the generator's
+ * ideal proposals), since the layout-A reference reader reads nothing there. Losing pages or
+ * garbling one amount may only widen what that reader's proposals decide.
+ */
+describe("soundness on layout B, with a reader that proposes what is printed", () => {
+  for (const g of layoutB()) {
+    it(`lienstack ${g.id}: no page or pair of pages lost, and no amount garbled, makes a result more decided`, () => {
+      const file = parseFile<LienRequest>(g.json, render(g.json));
+      const reader = () => fromProposals(g.ideal);
+      const full = lienstack(file, reader);
+      for (const { label, file: worse } of [...removals(file).map((v) => ({ ...v, label: `without ${v.label}` })), ...garbled(file).map((v) => ({ ...v, label: `with ${v.label}` }))]) {
+        const r = lienstack(worse, reader);
+        for (const c of full.checks) {
+          const after = r.checks.find((x) => x.id === c.id)!.status;
+          assert.ok(onlyWidens(c.status, after), `${g.id} ${label}: ${c.id} went ${c.status} -> ${after}`);
+        }
+        assert.ok(onlyWidens(full.verdict, r.verdict), `${g.id} ${label}: verdict ${full.verdict} -> ${r.verdict}`);
+        assert.ok(contains(r.cltv, full.cltv), `${g.id} ${label}: CLTV narrowed`);
+        assert.ok(full.heloc.otherLoan === r.heloc.otherLoan || r.heloc.otherLoan === "unknown", `${g.id} ${label}: otherLoan`);
+        assert.ok(contains(r.heloc.balance, full.heloc.balance) && contains(r.heloc.otherBalance, full.heloc.otherBalance), `${g.id} ${label}: a HELOC balance narrowed`);
+      }
     });
   }
 });

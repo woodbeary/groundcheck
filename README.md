@@ -178,13 +178,17 @@ they are not a model's accuracy. dscr-check's reference reader gets 94 of 94 han
 
 ## Soundness
 
-Tested on every example file:
+Tested on every layout-A title file and every DSCR file with the reference readers, and on every
+layout-B commitment with a reader that proposes exactly what it prints:
 
 - Removing every single page and every pair of pages never makes any result more certain
   (lienstack checks, verdicts, CLTV and the HELOC facts; dscr-check overlays, DSCR and each part).
 - Replacing any one printed amount or percent with merged-edit residue (`$318412,000.00`,
   `7%7.125%`) never makes any result more certain. This found a hole: a garbled principal let a
   note's printed payment through unchecked, turning overlay A from can't tell to fail on dscr-06.
+
+On every layout-A title file:
+
 - Adding an older copy of the current report never changes a result.
 - Printing Schedule B items in another order never changes a result. This found the absence rules
   naming items in reader order.
@@ -269,7 +273,7 @@ deployment would host both in its own cloud tenant.
 
 ```bash
 pnpm install
-pnpm test                                             # 260 tests
+pnpm test                                             # 272 tests
 pnpm typecheck
 pnpm lienstack examples/title/title-03.json           # any file in examples/title or examples/title-b
 pnpm lienstack examples/title/title-01.json --as-of 2026-12-15
@@ -325,7 +329,7 @@ doesn't call it yet.
 
 ## What was tested
 
-Measured in this repository, on synthetic files only, on Node 22.22: 260 tests with Node's test
+Measured in this repository, on synthetic files only, on Node 22.22: 272 tests with Node's test
 runner, all passing, and a clean typecheck. Beyond the soundness and eval tests above:
 
 - **Gate.** Merged digits, two numbers in one token, footnote marks and merged dates are held; a
