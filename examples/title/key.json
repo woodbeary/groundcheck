@@ -1,0 +1,147 @@
+{
+  "keyedBy": "the author of the layout-A fixtures, from each printed line; not independent of the reference reader, which was written for these files",
+  "note": "file -> doc|field -> the value printed, or null where the printed text can't be read as one value and must come back held. Items printed on a page missing from the file are not keyed.",
+  "files": {
+    "title-01": {
+      "expect": "pass",
+      "fields": {
+        "prelim|effective date": "2026-10-09",
+        "prelim|item 1 kind": "property-taxes",
+        "prelim|item 2 kind": "other",
+        "prelim|item 2 recorded": "1987-06-02",
+        "prelim|item 2 instrument": "1987-0042210",
+        "prelim|item 3 kind": "deed-of-trust",
+        "prelim|item 3 recorded": "2021-03-03",
+        "prelim|item 3 instrument": "2021-0123456",
+        "prelim|item 3 amount": 412000,
+        "prelim|item 3 holder": "Quillfeather Home Loans LLC",
+        "prelim|item 4 kind": "other",
+        "prelim|item 4 recorded": "1986-05-14",
+        "prelim|item 4 instrument": "1986-0031177",
+        "first-statement|statement date": "2026-10-15",
+        "first-statement|original principal": 412000,
+        "first-statement|principal balance": 371218.4
+      }
+    },
+    "title-02": {
+      "expect": "fail",
+      "fields": {
+        "prelim|effective date": "2026-10-09",
+        "prelim|item 1 kind": "property-taxes",
+        "prelim|item 2 kind": "other",
+        "prelim|item 2 recorded": "1987-06-02",
+        "prelim|item 2 instrument": "1987-0042210",
+        "prelim|item 3 kind": "deed-of-trust",
+        "prelim|item 3 recorded": "2021-03-03",
+        "prelim|item 3 instrument": "2021-0123456",
+        "prelim|item 3 amount": 412000,
+        "prelim|item 3 holder": "Quillfeather Home Loans LLC",
+        "prelim|item 4 kind": "credit-line-deed-of-trust",
+        "prelim|item 4 recorded": "2023-07-18",
+        "prelim|item 4 instrument": "2023-0456789",
+        "prelim|item 4 amount": 60000,
+        "prelim|item 4 holder": "Bramblecrest Federal Credit Union",
+        "prelim|item 5 kind": "other",
+        "prelim|item 5 recorded": "1986-05-14",
+        "prelim|item 5 instrument": "1986-0031177",
+        "first-statement|statement date": "2026-10-15",
+        "first-statement|original principal": 412000,
+        "first-statement|principal balance": 371218.4,
+        "line-statement|statement date": "2026-10-12",
+        "line-statement|original principal": 60000,
+        "line-statement|principal balance": 41300
+      }
+    },
+    "title-03": {
+      "expect": "unknown",
+      "fields": {
+        "prelim|effective date": "2026-10-09",
+        "prelim|item 1 kind": "property-taxes",
+        "prelim|item 2 kind": "other",
+        "prelim|item 2 recorded": "1987-06-02",
+        "prelim|item 2 instrument": "1987-0042210",
+        "prelim|item 3 kind": "deed-of-trust",
+        "prelim|item 3 recorded": "2021-03-03",
+        "prelim|item 3 instrument": "2021-0331870",
+        "prelim|item 3 amount": null,
+        "prelim|item 3 holder": "Quillfeather Home Loans LLC",
+        "prelim|item 4 kind": "other",
+        "prelim|item 4 recorded": "1986-05-14",
+        "prelim|item 4 instrument": "1986-0031177",
+        "first-statement|statement date": "2026-10-15",
+        "first-statement|original principal": 400000,
+        "first-statement|principal balance": 362905.11
+      }
+    },
+    "title-04": {
+      "expect": "unknown",
+      "fields": {
+        "prelim|effective date": "2026-10-09",
+        "prelim|item 1 kind": "property-taxes",
+        "prelim|item 2 kind": "other",
+        "prelim|item 2 recorded": "1987-06-02",
+        "prelim|item 2 instrument": "1987-0042210",
+        "prelim|item 3 kind": "deed-of-trust",
+        "prelim|item 3 recorded": "2021-03-03",
+        "prelim|item 3 instrument": "2021-0123456",
+        "prelim|item 3 amount": 412000,
+        "prelim|item 3 holder": "Quillfeather Home Loans LLC",
+        "first-statement|statement date": "2026-10-15",
+        "first-statement|original principal": 412000,
+        "first-statement|principal balance": 371218.4
+      }
+    },
+    "title-05": {
+      "expect": "fail",
+      "fields": {
+        "prelim|effective date": "2026-10-09",
+        "prelim|item 1 kind": "property-taxes",
+        "prelim|item 2 kind": "other",
+        "prelim|item 2 recorded": "1987-06-02",
+        "prelim|item 2 instrument": "1987-0042210",
+        "prelim|item 3 kind": "deed-of-trust",
+        "prelim|item 3 recorded": "2021-03-03",
+        "prelim|item 3 instrument": "2021-0123456",
+        "prelim|item 3 amount": 412000,
+        "prelim|item 3 holder": "Quillfeather Home Loans LLC",
+        "prelim|item 4 kind": "tax-lien",
+        "prelim|item 4 recorded": "2026-02-06",
+        "prelim|item 4 instrument": "2026-0019920",
+        "prelim|item 4 amount": 9877,
+        "prelim|item 5 kind": "judgment",
+        "prelim|item 5 recorded": "2025-08-21",
+        "prelim|item 5 instrument": "2025-0283301",
+        "prelim|item 5 amount": 18240,
+        "prelim|item 5 holder": "Tollgate Collections Inc",
+        "prelim|item 6 kind": "other",
+        "prelim|item 6 recorded": "1986-05-14",
+        "prelim|item 6 instrument": "1986-0031177",
+        "first-statement|statement date": "2026-10-15",
+        "first-statement|original principal": 412000,
+        "first-statement|principal balance": 371218.4
+      }
+    },
+    "title-06": {
+      "expect": "pass",
+      "fields": {
+        "prelim-september|effective date": "2026-09-02",
+        "prelim-october|effective date": "2026-10-20",
+        "prelim-october|item 1 kind": "property-taxes",
+        "prelim-october|item 2 kind": "other",
+        "prelim-october|item 2 recorded": "1987-06-02",
+        "prelim-october|item 2 instrument": "1987-0042210",
+        "prelim-october|item 3 kind": "deed-of-trust",
+        "prelim-october|item 3 recorded": "2021-03-03",
+        "prelim-october|item 3 instrument": "2021-0123456",
+        "prelim-october|item 3 amount": 412000,
+        "prelim-october|item 3 holder": "Quillfeather Home Loans LLC",
+        "prelim-october|item 4 kind": "other",
+        "prelim-october|item 4 recorded": "1986-05-14",
+        "prelim-october|item 4 instrument": "1986-0031177",
+        "first-statement|statement date": "2026-10-15",
+        "first-statement|original principal": 412000,
+        "first-statement|principal balance": 371218.4
+      }
+    }
+  }
+}

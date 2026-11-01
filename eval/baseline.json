@@ -1,0 +1,69 @@
+{
+  "note": "Pinned scores per reader and layout. CI fails if a run gets worse on any count; pin again only on purpose (node src/cli.ts eval --pin).",
+  "entries": {
+    "reference@title-a": {
+      "files": 6,
+      "fields": 111,
+      "correct": 111,
+      "wrong": 0,
+      "missed": 0,
+      "claims": 111,
+      "unsupported": 0,
+      "held": 1,
+      "mustHold": 1,
+      "mustHoldHeld": 1,
+      "checks": 48,
+      "cantTell": 9,
+      "verdictsRight": 6,
+      "responses": "pattern reader"
+    },
+    "reference@title-b": {
+      "files": 12,
+      "fields": 257,
+      "correct": 27,
+      "wrong": 0,
+      "missed": 230,
+      "claims": 27,
+      "unsupported": 0,
+      "held": 0,
+      "mustHold": 3,
+      "mustHoldHeld": 0,
+      "checks": 96,
+      "cantTell": 96,
+      "verdictsRight": 6,
+      "responses": "pattern reader"
+    },
+    "claude-json@title-b": {
+      "files": 12,
+      "fields": 257,
+      "correct": 231,
+      "wrong": 4,
+      "missed": 22,
+      "claims": 235,
+      "unsupported": 4,
+      "held": 3,
+      "mustHold": 3,
+      "mustHoldHeld": 3,
+      "checks": 96,
+      "cantTell": 45,
+      "verdictsRight": 9,
+      "responses": "simulated"
+    },
+    "claude-citations@title-b": {
+      "files": 12,
+      "fields": 257,
+      "correct": 233,
+      "wrong": 3,
+      "missed": 21,
+      "claims": 236,
+      "unsupported": 2,
+      "held": 3,
+      "mustHold": 3,
+      "mustHoldHeld": 3,
+      "checks": 96,
+      "cantTell": 36,
+      "verdictsRight": 11,
+      "responses": "simulated"
+    }
+  }
+}
