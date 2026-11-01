@@ -231,10 +231,14 @@ function rule(id: Check["id"], status: Tri, because: string): Check {
 /** No lien matching `bad` may stay on the property. */
 function absent(title: TitleState, liens: readonly Lien[], bad: (l: Lien) => boolean, what: string): { status: Tri; because: string } {
   if (!title.decided) return { status: "unknown", because: title.because };
-  const sure = liens.find((l) => bad(l) && l.stays === "yes");
-  if (sure) return { status: "fail", because: `item ${sure.item.number}: ${what} (${backed(sure.item.instrument) ?? "instrument not backed"})` };
-  const maybe = liens.find((l) => bad(l) && l.stays === "maybe");
-  if (maybe) return { status: "unknown", because: `item ${maybe.item.number} is ${what}; can't tell whether it is paid at closing` };
+  const sure = liens.filter((l) => bad(l) && l.stays === "yes");
+  if (sure.length > 0) {
+    return { status: "fail", because: sure.map((l) => `item ${l.item.number}: ${what} (${backed(l.item.instrument) ?? "instrument not backed"})`).join("; ") };
+  }
+  const maybe = liens.filter((l) => bad(l) && l.stays === "maybe");
+  if (maybe.length > 0) {
+    return { status: "unknown", because: `${maybe.map((l) => `item ${l.item.number}`).join(", ")} ${maybe.length === 1 ? "is" : "are each"} ${what}; can't tell whether ${maybe.length === 1 ? "it is" : "they are"} paid at closing` };
+  }
   return title.complete ? { status: "pass", because: `none on ${title.because}` } : { status: "unknown", because: `none visible, but ${title.because}` };
 }
 

@@ -90,6 +90,12 @@ describe("lienstack on the synthetic files", () => {
     assert.equal(status(clean, "no-tax-or-judgment"), "pass");
   });
 
+  it("names every item that fails an absence rule, not just the first", () => {
+    const because = lienstack(title("title-05")).checks.find((c) => c.id === "no-tax-or-judgment")!.because;
+    assert.match(because, /item 4: a recorded tax lien or judgment/);
+    assert.match(because, /item 5: a recorded tax lien or judgment/);
+  });
+
   it("counts only the newest report and names the one it superseded", () => {
     const r = lienstack(title("title-06"));
     assert.equal(r.report.current, "prelim-october");
