@@ -19,4 +19,12 @@ describe("the package ships as groundcheck", () => {
     assert.match(readme, /\*\*October 3, 2026\.\*\* Transcribing/);
     assert.doesNotMatch(readme, /October 4, 2026/);
   });
+
+  it("has CI run the eval ratchet and the Encompass demo on Node 22 and 24", () => {
+    const ci = text(".github/workflows/ci.yml");
+    assert.match(ci, /node: \["22", "24"\]/);
+    assert.match(ci, /pnpm -s eval/);
+    assert.match(ci, /pnpm -s demo:encompass/);
+    assert.match(ci, /--as-of 2026-12-15/);
+  });
 });

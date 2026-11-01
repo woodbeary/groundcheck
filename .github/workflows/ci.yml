@@ -30,5 +30,8 @@ jobs:
       - name: The README's demo commands run
         run: |
           pnpm -s lienstack examples/title/title-02.json
-          pnpm -s dscr examples/dscr/dscr-05.json
-          pnpm -s eval
+          pnpm -s lienstack examples/title/title-01.json --as-of 2026-12-15
+          pnpm -s dscr examples/dscr/dscr-05.json --json > /dev/null
+          pnpm -s demo:encompass
+      - name: Reader eval, no worse than eval/baseline.json
+        run: pnpm -s eval
