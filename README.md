@@ -2,15 +2,15 @@
 
 Two loan-file checks that take no value on a reader's word.
 
-- **lienstack** reads a title report's Schedule B and the mortgage statements in a file, then
-  checks the lien conditions a second-lien HELOC prints: the new line records second, behind a
+- **lienstack** reads a preliminary title report's Schedule B and the mortgage statements in a
+  file, then checks the lien conditions a second-lien HELOC guide prints: the new line records second, behind a
   first lien seasoned 12 months, with no senior line of credit, recorded tax lien, judgment or
   reverse mortgage. Combined loan-to-value comes out as a range that only cited liens and cited
   balances can narrow.
 - **dscr-check** routes a DSCR file's pages, reads the rent schedule, lease, note, tax bill,
   insurance declarations and association dues, and scores DSCR (qualifying rent ÷ PITIA) as a
   range against each overlay's floor. A missing lease, an expired policy or a garbled tax total
-  leaves the file at "can't tell". It never passes.
+  can't pass a file; at best it reads "can't tell".
 
 Both run on one rule. A reader (the reference reader here, a model, or a vendor extractor)
 only proposes a value and quotes the document, page and line that print it. Code decides
@@ -30,7 +30,7 @@ escrow. The lesson in this repository came from software I built myself:
 - **December 14–15, 2025.** I built a one-day DSCR demo for a mortgage-tech company. Agents
   sorted loan PDF pages into seven classes, one of them `UNCERTAIN` for a person, extracted the
   rent schedule, and scored DSCR, and every reviewer's "Bad Output" click went into a golden set.
-  The payment and expenses behind that score were hard-coded ($3,150 and $8,200).
+  The payment and expenses behind that score were hard-coded ($3,150 a month, $8,200 a year).
 - **October 4, 2026.** Transcribing lenders' HELOC grids into my own HELOC engine, I found
   second-lien cells printed with merged tracked changes (`$375400,000`, `75%85%***`). I held them
   with a written reason instead of guessing. The same day I kept a DSCR cash-out grid blocked,
@@ -66,8 +66,9 @@ flowchart LR
 quoted text is on the cited page, sits on the line that labels that field (and, for a Schedule B
 item, inside that item's own numbered line), and prints exactly that value. If the quote prints
 something that can't be read as one value, the value is *held* with the reason and never
-repaired: a model that turns `$318400,000.00` into a clean `$400,000` and cites the right page
-still gets held, because the page doesn't print `$400,000`. Anything else is *unsupported*.
+repaired: a model that turns `$318400,000.00` into a clean `$400,000` and cites the right line
+still gets held, because the quoted line prints a token that can't be read as one amount and
+the gate won't choose a reading for it. Anything else is *unsupported*.
 Held and unsupported values leave the fact as wide as a missing page would.
 
 **Dates are judged on the request day.** Title reports, statements, rent schedules and
