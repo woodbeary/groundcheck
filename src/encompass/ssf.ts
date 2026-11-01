@@ -64,6 +64,7 @@ export class ReviewForm {
     const loan = await this.elli.getObject("loan");
     const value = await loan.getField(staged);
     if (!value) throw new Error(`${staged} is blank: there is nothing to accept`);
+    if (/ to /.test(value)) throw new Error(`${staged} is a range (${value}): only a single value can go into a loan field`);
     await loan.setFields({ [target]: value, [STAGED.status]: "Reviewed" });
     await loan.commit();
   }

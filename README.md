@@ -228,7 +228,8 @@ Duplicate Attachments. This sits around it:
   one call, and refuses any other field before sending.
 - **The processor decides** (`src/encompass/ssf.ts`). An SSF guest's logic over `elli.script`'s loan
   object: each staged value beside the loan's current value and its source; Accept calls
-  `setFields` and `commit()` in the processor's session; Keep changes only the review status.
+  `setFields` and `commit()` in the processor's session, and refuses a blank or a range; Keep
+  changes only the review status.
   `enhancedfieldchange` events become `writtenBy` rows, and a processor's value that differs from
   the staged one becomes a golden-set entry. The milestone check reads only local state, inside the
   web's 1-second limit; an admin's milestone rule on `CX.ED.STATUS` is the sturdier choice.
@@ -274,7 +275,7 @@ deployment would host both in its own cloud tenant.
 
 ```bash
 pnpm install
-pnpm test                                             # 273 tests
+pnpm test                                             # 274 tests
 pnpm typecheck
 pnpm lienstack examples/title/title-03.json           # any file in examples/title or examples/title-b
 pnpm lienstack examples/title/title-01.json --as-of 2026-12-15
@@ -330,7 +331,7 @@ doesn't call it yet.
 
 ## What was tested
 
-Measured in this repository, on synthetic files only, on Node 22.22: 273 tests with Node's test
+Measured in this repository, on synthetic files only, on Node 22.22: 274 tests with Node's test
 runner, all passing, and a clean typecheck. Beyond the soundness and eval tests above:
 
 - **Gate.** Merged digits, two numbers in one token, footnote marks and merged dates are held; a

@@ -85,6 +85,16 @@ describe(`the processor decides in the SSF form [doc: ${DOC}/docs/ellie-mae-scri
     assert.equal(goldenEntries(events.flatMap(fieldWrites).filter((w) => w.writtenBy === CONNECTOR), staged, CONNECTOR).length, 0);
   });
 
+  it("won't let Accept put a range into a loan field, even when the admin maps one", async () => {
+    const enc = new MockEncompass();
+    const noLease = dscrFromCapture({ ...book, response: { ...book.response, forms: book.response.forms.filter((f) => f.form_type !== "LEASE_AGREEMENT") } }, { asOf: "2026-10-31" }, OVERLAYS);
+    await stage(enc, LOAN, stagedValues(noLease), CONNECTOR);
+    const elli = stubElli(enc, LOAN, PROCESSOR);
+    await assert.rejects(new ReviewForm(elli, { [STAGED.dscr]: "SYN.SUBJECT.DSCR" }).accept(STAGED.dscr), /CX\.ED\.DSCR is a range \(0\.000 to 1\.222\)/);
+    assert.equal(elli.commits, 0);
+    assert.equal((await enc.getFields(LOAN, ["SYN.SUBJECT.DSCR"]))["SYN.SUBJECT.DSCR"], "");
+  });
+
   it("Keep changes only the review status, so the processor's value stands", async () => {
     const enc = new MockEncompass();
     await enc.setFields(LOAN, { "SYN.SUBJECT.LEASE.RENT": "3100.00" }, PROCESSOR);
