@@ -1,0 +1,234 @@
+{
+  "synthetic": true,
+  "kind": "doc-derived fixture",
+  "note": "A synthetic Ocrolus Book for one DSCR file, in the shape of GET /v1/book/forms. Field keys are copied from Ocrolus's published field tables; every value is invented. Not a recorded response: nothing here has been sent by Ocrolus.",
+  "sources": [
+    "https://docs.ocrolus.com/reference/book-form-data",
+    "https://docs.ocrolus.com/docs/form-data",
+    "https://docs.ocrolus.com/docs/form-1000-or-1007",
+    "https://docs.ocrolus.com/docs/lease-agreement",
+    "https://docs.ocrolus.com/docs/mortgage-note",
+    "https://docs.ocrolus.com/docs/tax-bill",
+    "https://docs.ocrolus.com/docs/homeowner-insurance-policy",
+    "https://docs.ocrolus.com/docs/homeowners-association-statement"
+  ],
+  "checked": "2026-11-01",
+  "loan": {
+    "loan_guid": "5f0c2a9e-6b1d-4c7e-9a3f-5a1e00c0b101",
+    "loan_number": "SYN-DSCR-0101",
+    "borrower_last_name": "Sample"
+  },
+  "response": {
+    "status": 200,
+    "response": {
+      "pk": 1001,
+      "uuid": "0b6d1c52-9e4a-4f7b-8c21-7d2e00a0f101",
+      "name": "Sample SYN-DSCR-0101",
+      "book_status": "ACTIVE",
+      "forms": [
+        {
+          "pk": 2001,
+          "uuid": "f-1007-0001",
+          "uploaded_doc_pk": 3001,
+          "form_type": "FORM_1000_OR_1007_SINGLE_FAMILY_COMPARABLE_RENT_SCHEDULE",
+          "raw_fields": {
+            "form_1000_or_1007_single_family_comparable_rent_schedule-Part05-FinalReconciliationOfMarketRent:iWeEstimateTheMonthlyMarketRentOfTheSubjectToBe": {
+              "value": "3900.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "RENT SCHEDULE.pdf",
+              "confidence": 1
+            },
+            "form_1000_or_1007_single_family_comparable_rent_schedule-Part05-FinalReconciliationOfMarketRent:reportSignedDate": {
+              "value": "09/22/2026",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "RENT SCHEDULE.pdf",
+              "confidence": 1
+            },
+            "form_1000_or_1007_single_family_comparable_rent_schedule-Part05-FinalReconciliationOfMarketRent:appraisersSignature": {
+              "value": "SIGNED",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "RENT SCHEDULE.pdf",
+              "confidence": 1
+            }
+          }
+        },
+        {
+          "pk": 2002,
+          "uuid": "f-lease-0001",
+          "uploaded_doc_pk": 3002,
+          "form_type": "LEASE_AGREEMENT",
+          "raw_fields": {
+            "lease_agreement-Part1-TenantInfo:monthlyPaymentAmount": {
+              "value": "3850.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "LEASE AGREEMENT.pdf",
+              "confidence": 1
+            },
+            "lease_agreement-Part1-TenantInfo:leaseStartDate": {
+              "value": "08/01/2026",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "LEASE AGREEMENT.pdf",
+              "confidence": 1
+            },
+            "lease_agreement-Part1-TenantInfo:leaseEndDate": {
+              "value": "07/31/2027",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "LEASE AGREEMENT.pdf",
+              "confidence": 1
+            },
+            "lease_agreement-Part1-TenantInfo:nameOfTenant1": {
+              "value": "CASEY EXAMPLE",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "LEASE AGREEMENT.pdf",
+              "confidence": 1
+            }
+          }
+        },
+        {
+          "pk": 2003,
+          "uuid": "f-note-0001",
+          "uploaded_doc_pk": 3003,
+          "form_type": "MORTGAGE_NOTE",
+          "raw_fields": {
+            "mortgage_note-Part2-AmountsAndDate:principalBalanceAmount": {
+              "value": "360000.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "NOTE.pdf",
+              "confidence": 1
+            },
+            "mortgage_note-Part2-AmountsAndDate:interestRate": {
+              "value": "7.125",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "NOTE.pdf",
+              "confidence": 1
+            },
+            "mortgage_note-Part2-AmountsAndDate:monthlyPaymentAmount": {
+              "value": "2425.39",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "NOTE.pdf",
+              "confidence": 1
+            },
+            "mortgage_note-Part2-AmountsAndDate:firstPaymentDate": {
+              "value": "12/01/2026",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "NOTE.pdf",
+              "confidence": 1
+            },
+            "mortgage_note-Part2-AmountsAndDate:maturityDate": {
+              "value": "11/01/2056",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "NOTE.pdf",
+              "confidence": 1
+            }
+          }
+        },
+        {
+          "pk": 2004,
+          "uuid": "f-tax-0001",
+          "uploaded_doc_pk": 3004,
+          "form_type": "TAX_BILL",
+          "raw_fields": {
+            "tax_bill-PartI-General:totalTaxesDue": {
+              "value": "5400.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "TAX BILL.pdf",
+              "confidence": 1
+            },
+            "tax_bill-PartIii-PaymentInformation:installment1Amount": {
+              "value": "2700.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "TAX BILL.pdf",
+              "confidence": 1
+            },
+            "tax_bill-PartIii-PaymentInformation:installment2Amount": {
+              "value": "2700.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "TAX BILL.pdf",
+              "confidence": 1
+            },
+            "tax_bill-PartIv-OtherInformation:issueDate": {
+              "value": "10/01/2026",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "TAX BILL.pdf",
+              "confidence": 1
+            }
+          }
+        },
+        {
+          "pk": 2005,
+          "uuid": "f-hoi-0001",
+          "uploaded_doc_pk": 3005,
+          "form_type": "HOMEOWNER_INSURANCE_POLICY",
+          "raw_fields": {
+            "homeowner_insurance_policy-Part2-PolicyInformation:totalPremium": {
+              "value": "1560.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "INSURANCE.pdf",
+              "confidence": 1
+            },
+            "homeowner_insurance_policy-Part2-PolicyInformation:effectiveDate": {
+              "value": "03/01/2026",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "INSURANCE.pdf",
+              "confidence": 1
+            },
+            "homeowner_insurance_policy-Part2-PolicyInformation:expirationDate": {
+              "value": "03/01/2027",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "INSURANCE.pdf",
+              "confidence": 1
+            }
+          }
+        },
+        {
+          "pk": 2006,
+          "uuid": "f-hoa-0001",
+          "uploaded_doc_pk": 3006,
+          "form_type": "HOMEOWNERS_ASSOCIATION_STATEMENT",
+          "raw_fields": {
+            "homeowners_association_statement-General:assessmentAmount(HoaDues)": {
+              "value": "185.00",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "HOA STATEMENT.pdf",
+              "confidence": 1
+            },
+            "homeowners_association_statement-General:assessmentFrequency": {
+              "value": "MONTHLY",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "HOA STATEMENT.pdf",
+              "confidence": 1
+            },
+            "homeowners_association_statement-General:dueDate": {
+              "value": "11/01/2026",
+              "is_empty": false,
+              "alias_used": null,
+              "source_filename": "HOA STATEMENT.pdf",
+              "confidence": 1
+            }
+          }
+        }
+      ]
+    }
+  }
+}
