@@ -8,7 +8,10 @@ import type { Claim } from "../core/evidence.ts";
 import type { ItemReading, LienKind, ReportReading, StatementReading, TitleReading } from "../lienstack/types.ts";
 
 export interface Proposal {
+  /** The document the value belongs to: the report an item is on, or the statement. */
   readonly doc: string;
+  /** The document the quote is from, when the reader cites another one (the gate will refuse it). */
+  readonly citedDoc?: string;
   readonly page: number;
   /** "effective date", "item 8 amount", "statement date", "original principal", "principal balance". */
   readonly field: string;
@@ -20,7 +23,7 @@ const ITEM = /^item (\d{1,2}) (kind|recorded|instrument|amount|holder)$/;
 const STATEMENT_FIELDS = { "statement date": "date", "original principal": "original", "principal balance": "balance" } as const;
 
 function claim<T>(p: Proposal, value: T): Claim<T> {
-  return { field: p.field, value, cite: { doc: p.doc, page: p.page, span: p.quote } };
+  return { field: p.field, value, cite: { doc: p.citedDoc ?? p.doc, page: p.page, span: p.quote } };
 }
 
 export function fromProposals(proposals: readonly Proposal[], readerNote?: string): TitleReading {

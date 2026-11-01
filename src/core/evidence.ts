@@ -51,6 +51,9 @@ export interface Checked<T> {
 /** Every proposed value and what the gate made of it, with the line it quoted: one audit row each. */
 export interface GatedClaim {
   readonly field: string;
+  /** The document the value belongs to (a report's item, a statement's balance), when known. */
+  readonly about?: string;
+  /** The document the quote was cited from. */
   readonly doc: string;
   readonly page: number;
   readonly quote: string;
@@ -59,8 +62,8 @@ export interface GatedClaim {
   readonly reason?: string;
 }
 
-export function gated(checked: Checked<unknown>): GatedClaim {
-  const base = { field: checked.field, doc: checked.cite.doc, page: checked.cite.page, quote: checked.cite.span, status: checked.status, value: checked.value };
+export function gated(checked: Checked<unknown>, about?: string): GatedClaim {
+  const base = { field: checked.field, ...(about === undefined ? {} : { about }), doc: checked.cite.doc, page: checked.cite.page, quote: checked.cite.span, status: checked.status, value: checked.value };
   return checked.reason === undefined ? base : { ...base, reason: checked.reason };
 }
 

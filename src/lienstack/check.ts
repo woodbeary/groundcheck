@@ -127,24 +127,26 @@ function exceptionItems(doc: Doc): PrintedItem[] {
   return items.map((i) => ({ number: i.number, page: i.page, text: i.lines.join("\n") }));
 }
 
-/** Item `number` as the page prints it, or null if that page prints no such exception. */
-function printedItem(docs: readonly Doc[], doc: string, page: number, number: number): string | null {
+/** Exception `number` as the report prints it, wherever it is, or null if the report prints none. */
+function printedItem(docs: readonly Doc[], doc: string, number: number): PrintedItem | null {
   const d = docs.find((x) => x.id === doc);
-  return (d && exceptionItems(d).find((i) => i.page === page && i.number === number)?.text) ?? null;
+  return (d && exceptionItems(d).find((i) => i.number === number)) ?? null;
 }
 
 /**
  * An item's kind is read from the whole item as printed, never from whatever part of it a reader
  * chose to quote, and every other field must be quoted from inside that item in the same report.
+ * The item is found by its number in the report, not by the page the reader cited, so one
+ * misplaced citation costs one value, not the whole item.
  */
 function gateItem(docs: readonly Doc[], doc: string, reading: ItemReading): Item {
   const line = { name: `item ${reading.number}`, pattern: new RegExp(`^${reading.number}\\.\\s`) };
-  const printed = printedItem(docs, doc, reading.kind.cite.page, reading.number);
-  const item = { doc, page: reading.kind.cite.page, within: printed ?? "" };
+  const printed = printedItem(docs, doc, reading.number);
+  const item = { doc, page: printed?.page ?? reading.kind.cite.page, within: printed?.text ?? "" };
   const kind: Checked<LienKind> =
     printed === null
-      ? { ...reading.kind, status: "unsupported", reason: `page ${reading.kind.cite.page} of "${doc}" prints no item ${reading.number}` }
-      : checkLabel(docs, reading.kind, kindOf, { doc, label: line, whole: printed });
+      ? { ...reading.kind, status: "unsupported", reason: `"${doc}" prints no exception ${reading.number} on any page in the file` }
+      : checkLabel(docs, reading.kind, kindOf, { doc, page: printed.page, label: line, whole: printed.text });
   return {
     number: reading.number,
     kind,
@@ -212,7 +214,7 @@ function currentStatements(docs: readonly Doc[], reading: TitleReading, request:
     const balance = s.balance ? checkMoney(docs, s.balance, { doc: s.doc, label: LABELS.balance }) : undefined;
     for (const c of [date, original, balance]) {
       note(problems, c);
-      if (c) claims.push(gated(c));
+      if (c) claims.push(gated(c, s.doc));
     }
     const d = backed(date);
     const o = backed(original);
@@ -287,12 +289,12 @@ export function checkTitle(docs: readonly Doc[], reading: TitleReading, request:
   const claims: GatedClaim[] = [];
   const title = titleState(docs, reading, request, policy);
   const report = title.report;
-  for (const r of reading.reports) if (r.effective) claims.push(gated(checkDate(docs, r.effective, { doc: r.doc, label: LABELS.effective })));
+  for (const r of reading.reports) if (r.effective) claims.push(gated(checkDate(docs, r.effective, { doc: r.doc, label: LABELS.effective }), r.doc));
   const items = report ? report.items.map((r) => gateItem(docs, report.doc, r)).sort((a, b) => a.number - b.number) : [];
   for (const item of items) {
     for (const c of [item.kind, item.recorded, item.instrument, item.amount, item.holder]) {
       note(problems, c);
-      if (c) claims.push(gated(c));
+      if (c && report) claims.push(gated(c, report.doc));
     }
   }
   const statements = currentStatements(docs, reading, request, policy, problems, claims);

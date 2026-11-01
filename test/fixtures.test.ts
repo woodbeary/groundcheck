@@ -28,7 +28,7 @@ describe("fixtures carry no real-looking personal data", () => {
       assert.doesNotMatch(text, ACCOUNT, "nine or more digits in a row");
       assert.doesNotMatch(text, EMAIL, "email address");
       assert.doesNotMatch(text, PHONE, "phone number");
-      if (/^(title|dscr|alta)-\d+\.json$/.test(basename(path))) assert.equal(JSON.parse(text).synthetic, true);
+      if (path.startsWith(EXAMPLES) && /^(title|dscr|alta)-\d+\.json$/.test(basename(path))) assert.equal(JSON.parse(text).synthetic, true);
     });
   }
 });

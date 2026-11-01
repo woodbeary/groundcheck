@@ -1,0 +1,262 @@
+{
+  "reader": "claude-citations",
+  "file": "alta-11",
+  "kind": "simulated",
+  "promptSha": "06447774ddb25fe043734d57d66b16f61686279808addf39be9fdc5d49b12318",
+  "fileSha256": "00a7e50faaeb6287d73bd41744341dac35503ed1c091cbdc82c79ce84b5a8a25",
+  "recordedAt": "2026-11-01T00:00:00Z",
+  "note": "simulated, not model output: the model declines",
+  "request": {
+    "model": "claude-opus-5-5",
+    "max_tokens": 16000,
+    "output_config": {
+      "effort": "medium"
+    },
+    "system": "You read synthetic title documents for a checker. You only propose values; code decides which ones stand.\nRead a title report's Schedule B exceptions (Part II of a commitment, or Schedule B of a preliminary report). Part I requirements and Schedule A lines are not items.\nList every numbered exception, including the standard ones, with its kind, and read the effective or commitment date of every report.\nFor each mortgage statement or line-of-credit statement, read the statement date, the original principal or credit limit, and the principal balance.\nNever correct a printed value. If a value looks garbled (digits run together, two values in one, a footnote mark), quote it exactly as printed and give your best reading; the checker decides.\nPages marked as withheld are not available to you. Never repeat payment or account instructions.\nKinds: deed-of-trust; credit-line-deed-of-trust (a line of credit or revolving deed of trust); reverse-mortgage; tax-lien (a recorded tax lien); judgment; subordination (a subordination agreement); property-taxes (taxes printed as a lien not yet due or payable); other-lien (a recorded lien none of these name, such as a mechanic's lien); other (anything that is not a recorded lien: easements, covenants, standard exceptions).\nWrite one line per value, exactly in the form `<document id>|<field>: <value>`, and cite the block that prints the value.\nFields: `effective date`, `item N kind`, `item N recorded`, `item N instrument`, `item N amount`, `item N holder`, `statement date`, `original principal`, `principal balance`.\nWrite dates as YYYY-MM-DD and amounts as plain numbers. Leave out a field the document doesn't print. Write nothing else.",
+    "messages": [
+      {
+        "role": "user",
+        "content": [
+          {
+            "type": "document",
+            "source": {
+              "type": "content",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented."
+                },
+                {
+                  "type": "text",
+                  "text": "COMMITMENT FOR TITLE INSURANCE (ALTA 2021 v. 01.00)"
+                },
+                {
+                  "type": "text",
+                  "text": "Issued by Synthetic Abstract and Title Co.    Commitment No. SYN-B-1111"
+                },
+                {
+                  "type": "text",
+                  "text": "SCHEDULE A"
+                },
+                {
+                  "type": "text",
+                  "text": "1. Commitment Date: August 20, 2026 at 8:00 a.m."
+                },
+                {
+                  "type": "text",
+                  "text": "2. Policy to be issued: ALTA 2021 Loan Policy. Proposed Insured: the lender of the new line of credit."
+                },
+                {
+                  "type": "text",
+                  "text": "3. The estate or interest in the Land at the Commitment Date is Fee Simple."
+                },
+                {
+                  "type": "text",
+                  "text": "4. The Title is, at the Commitment Date, vested in: Pat Sample and Lee Sample, as joint tenants."
+                },
+                {
+                  "type": "text",
+                  "text": "5. The Land is described in Exhibit A, not reproduced in this synthetic file."
+                },
+                {
+                  "type": "text",
+                  "text": "Commitment No. SYN-B-1111    Page 1 of 4"
+                }
+              ]
+            },
+            "title": "commitment page 1",
+            "citations": {
+              "enabled": true
+            }
+          },
+          {
+            "type": "document",
+            "source": {
+              "type": "content",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Commitment No. SYN-B-1111    SCHEDULE B, PART I - REQUIREMENTS"
+                },
+                {
+                  "type": "text",
+                  "text": "All of the following Requirements must be met:"
+                },
+                {
+                  "type": "text",
+                  "text": "1. The Proposed Insured must notify the Company in writing of the name of any party not referred to in this Commitment who will obtain an interest in the Land or who will make a loan on the Land."
+                },
+                {
+                  "type": "text",
+                  "text": "2. Pay the agreed amount for the estate or interest to be insured."
+                },
+                {
+                  "type": "text",
+                  "text": "3. Pay the premiums, fees, and charges for the Policy to the Company."
+                },
+                {
+                  "type": "text",
+                  "text": "4. Documents satisfactory to the Company that convey the Title or create the Mortgage to be insured must be properly authorized, executed, delivered, and recorded in the Public Records."
+                },
+                {
+                  "type": "text",
+                  "text": "Commitment No. SYN-B-1111    Page 2 of 4"
+                }
+              ]
+            },
+            "title": "commitment page 2",
+            "citations": {
+              "enabled": true
+            }
+          },
+          {
+            "type": "document",
+            "source": {
+              "type": "content",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Commitment No. SYN-B-1111    SCHEDULE B, PART II - EXCEPTIONS"
+                },
+                {
+                  "type": "text",
+                  "text": "1. Any defect, lien, encumbrance, adverse claim, or other matter that appears for the first time in the Public Records or is created, attaches, or is disclosed between the Commitment Date and the date on which all of the Schedule B, Part I-Requirements are met."
+                },
+                {
+                  "type": "text",
+                  "text": "2. Rights or claims of parties in possession not shown by the Public Records."
+                },
+                {
+                  "type": "text",
+                  "text": "3. Easements, or claims of easements, not shown by the Public Records."
+                },
+                {
+                  "type": "text",
+                  "text": "4. Any lien, or right to a lien, for services, labor or material heretofore or hereafter furnished, imposed by law and not shown by the Public Records."
+                },
+                {
+                  "type": "text",
+                  "text": "5. Taxes or special assessments that are not shown as existing liens by the Public Records."
+                },
+                {
+                  "type": "text",
+                  "text": "6. General and special taxes and assessments for the fiscal year 2026-2027, a lien not yet due or payable."
+                },
+                {
+                  "type": "text",
+                  "text": "Commitment No. SYN-B-1111    Page 3 of 4"
+                }
+              ]
+            },
+            "title": "commitment page 3",
+            "citations": {
+              "enabled": true
+            }
+          },
+          {
+            "type": "document",
+            "source": {
+              "type": "content",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "Commitment No. SYN-B-1111    SCHEDULE B, PART II - EXCEPTIONS (continued)"
+                },
+                {
+                  "type": "text",
+                  "text": "7. Easement in favor of Synthetic Power and Light Co. for underground utilities, recorded June 2, 1987 as Document No. 1987-0042210."
+                },
+                {
+                  "type": "text",
+                  "text": "8. A Deed of Trust and Assignment of Rents to secure an original principal amount of $412,000.00, dated February 26, 2021,\n   recorded March 3, 2021 as Document No. 2021-0123456 of Official Records.\n   Trustor: Pat Sample and Lee Sample. Beneficiary: Quillfeather Home Loans LLC."
+                },
+                {
+                  "type": "text",
+                  "text": "9. Covenants, conditions and restrictions recorded May 14, 1986 as Document No. 1986-0031177."
+                },
+                {
+                  "type": "text",
+                  "text": "END OF SCHEDULE B, PART II"
+                },
+                {
+                  "type": "text",
+                  "text": "This page is only a part of a 2021 ALTA Commitment for Title Insurance (synthetic)."
+                },
+                {
+                  "type": "text",
+                  "text": "Commitment No. SYN-B-1111    Page 4 of 4"
+                }
+              ]
+            },
+            "title": "commitment page 4",
+            "citations": {
+              "enabled": true
+            }
+          },
+          {
+            "type": "document",
+            "source": {
+              "type": "content",
+              "content": [
+                {
+                  "type": "text",
+                  "text": "SYNTHETIC TEST DOCUMENT. Every name, address and number here is invented."
+                },
+                {
+                  "type": "text",
+                  "text": "MONTHLY MORTGAGE STATEMENT"
+                },
+                {
+                  "type": "text",
+                  "text": "Servicer: Quillfeather Home Loans LLC"
+                },
+                {
+                  "type": "text",
+                  "text": "Statement Date: 10/15/2026"
+                },
+                {
+                  "type": "text",
+                  "text": "Original Principal: $412,000.00"
+                },
+                {
+                  "type": "text",
+                  "text": "Outstanding Principal Balance: $371,218.40"
+                },
+                {
+                  "type": "text",
+                  "text": "Page 1 of 1"
+                }
+              ]
+            },
+            "title": "first-statement page 5",
+            "citations": {
+              "enabled": true
+            }
+          },
+          {
+            "type": "text",
+            "text": "Read these documents. Each document is one page; its title names the document id and the page number."
+          }
+        ]
+      }
+    ]
+  },
+  "response": {
+    "id": "msg_simulated_claude-citations_alta-11",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-opus-5-5",
+    "content": [],
+    "stop_reason": "refusal",
+    "stop_sequence": null,
+    "stop_details": {
+      "type": "refusal",
+      "category": null,
+      "explanation": "simulated refusal"
+    },
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+    }
+  }
+}

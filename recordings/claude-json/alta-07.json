@@ -1,0 +1,400 @@
+{
+  "reader": "claude-json",
+  "file": "alta-07",
+  "kind": "simulated",
+  "promptSha": "c33ff2edb491507efc08d4e8c1b95cfd4a5489b2bf9f1700d480275afceea6b7",
+  "fileSha256": "27155161e8e45e59f56658fdf5d18be64f39e7a9661f855c9b840a14efbbe9ee",
+  "recordedAt": "2026-11-01T00:00:00Z",
+  "note": "simulated, not model output: paraphrases the line of credit's beneficiary",
+  "request": {
+    "model": "claude-opus-5-5",
+    "max_tokens": 16000,
+    "output_config": {
+      "effort": "medium",
+      "format": {
+        "type": "json_schema",
+        "schema": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "reports",
+            "statements"
+          ],
+          "properties": {
+            "reports": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "doc",
+                  "effective",
+                  "items"
+                ],
+                "properties": {
+                  "doc": {
+                    "type": "string"
+                  },
+                  "effective": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "value",
+                          "doc",
+                          "page",
+                          "quote"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "doc": {
+                            "type": "string"
+                          },
+                          "page": {
+                            "type": "integer"
+                          },
+                          "quote": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "number",
+                        "kind",
+                        "recorded",
+                        "instrument",
+                        "amount",
+                        "holder"
+                      ],
+                      "properties": {
+                        "number": {
+                          "type": "integer"
+                        },
+                        "kind": {
+                          "type": "object",
+                          "additionalProperties": false,
+                          "required": [
+                            "value",
+                            "doc",
+                            "page",
+                            "quote"
+                          ],
+                          "properties": {
+                            "value": {
+                              "type": "string",
+                              "enum": [
+                                "deed-of-trust",
+                                "credit-line-deed-of-trust",
+                                "reverse-mortgage",
+                                "tax-lien",
+                                "judgment",
+                                "subordination",
+                                "property-taxes",
+                                "other-lien",
+                                "other"
+                              ]
+                            },
+                            "doc": {
+                              "type": "string"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "quote": {
+                              "type": "string"
+                            }
+                          }
+                        },
+                        "recorded": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "value",
+                                "doc",
+                                "page",
+                                "quote"
+                              ],
+                              "properties": {
+                                "value": {
+                                  "type": "string",
+                                  "format": "date"
+                                },
+                                "doc": {
+                                  "type": "string"
+                                },
+                                "page": {
+                                  "type": "integer"
+                                },
+                                "quote": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "instrument": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "value",
+                                "doc",
+                                "page",
+                                "quote"
+                              ],
+                              "properties": {
+                                "value": {
+                                  "type": "string"
+                                },
+                                "doc": {
+                                  "type": "string"
+                                },
+                                "page": {
+                                  "type": "integer"
+                                },
+                                "quote": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "amount": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "value",
+                                "doc",
+                                "page",
+                                "quote"
+                              ],
+                              "properties": {
+                                "value": {
+                                  "type": "number"
+                                },
+                                "doc": {
+                                  "type": "string"
+                                },
+                                "page": {
+                                  "type": "integer"
+                                },
+                                "quote": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "holder": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "additionalProperties": false,
+                              "required": [
+                                "value",
+                                "doc",
+                                "page",
+                                "quote"
+                              ],
+                              "properties": {
+                                "value": {
+                                  "type": "string"
+                                },
+                                "doc": {
+                                  "type": "string"
+                                },
+                                "page": {
+                                  "type": "integer"
+                                },
+                                "quote": {
+                                  "type": "string"
+                                }
+                              }
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "statements": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "doc",
+                  "date",
+                  "original",
+                  "balance"
+                ],
+                "properties": {
+                  "doc": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "value",
+                          "doc",
+                          "page",
+                          "quote"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "string",
+                            "format": "date"
+                          },
+                          "doc": {
+                            "type": "string"
+                          },
+                          "page": {
+                            "type": "integer"
+                          },
+                          "quote": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "original": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "value",
+                          "doc",
+                          "page",
+                          "quote"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          },
+                          "doc": {
+                            "type": "string"
+                          },
+                          "page": {
+                            "type": "integer"
+                          },
+                          "quote": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "balance": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "value",
+                          "doc",
+                          "page",
+                          "quote"
+                        ],
+                        "properties": {
+                          "value": {
+                            "type": "number"
+                          },
+                          "doc": {
+                            "type": "string"
+                          },
+                          "page": {
+                            "type": "integer"
+                          },
+                          "quote": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "system": "You read synthetic title documents for a checker. You only propose values; code decides which ones stand.\nRead a title report's Schedule B exceptions (Part II of a commitment, or Schedule B of a preliminary report). Part I requirements and Schedule A lines are not items.\nList every numbered exception, including the standard ones, with its kind, and read the effective or commitment date of every report.\nFor each mortgage statement or line-of-credit statement, read the statement date, the original principal or credit limit, and the principal balance.\nNever correct a printed value. If a value looks garbled (digits run together, two values in one, a footnote mark), quote it exactly as printed and give your best reading; the checker decides.\nPages marked as withheld are not available to you. Never repeat payment or account instructions.\nKinds: deed-of-trust; credit-line-deed-of-trust (a line of credit or revolving deed of trust); reverse-mortgage; tax-lien (a recorded tax lien); judgment; subordination (a subordination agreement); property-taxes (taxes printed as a lien not yet due or payable); other-lien (a recorded lien none of these name, such as a mechanic's lien); other (anything that is not a recorded lien: easements, covenants, standard exceptions).\nReturn JSON matching the schema. Every value carries the document id, the page number and a quote copied exactly from that page: the shortest text that prints the value with its label (for example \"recorded March 3, 2021\", \"Document No. 2021-0123456\" or \"Original Principal: $412,000.00\").\nFor an item's kind, quote the whole numbered item, every line of it. Use null for a field the item doesn't print.",
+    "messages": [
+      {
+        "role": "user",
+        "content": "<document id=\"commitment\">\n<page n=\"1\">\nSYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.\nCOMMITMENT FOR TITLE INSURANCE (ALTA 2021 v. 01.00)\nIssued by Synthetic Abstract and Title Co.    Commitment No. SYN-B-0707\nSCHEDULE A\n1. Commitment Date: October 12, 2026 at 8:00 a.m.\n2. Policy to be issued: ALTA 2021 Loan Policy. Proposed Insured: the lender of the new line of credit.\n3. The estate or interest in the Land at the Commitment Date is Fee Simple.\n4. The Title is, at the Commitment Date, vested in: Pat Sample and Lee Sample, as joint tenants.\n5. The Land is described in Exhibit A, not reproduced in this synthetic file.\nCommitment No. SYN-B-0707    Page 1 of 4\n</page>\n<page n=\"2\">\nCommitment No. SYN-B-0707    SCHEDULE B, PART I - REQUIREMENTS\nAll of the following Requirements must be met:\n1. The Proposed Insured must notify the Company in writing of the name of any party not referred to in this Commitment who will obtain an interest in the Land or who will make a loan on the Land.\n2. Pay the agreed amount for the estate or interest to be insured.\n3. Pay the premiums, fees, and charges for the Policy to the Company.\n4. Documents satisfactory to the Company that convey the Title or create the Mortgage to be insured must be properly authorized, executed, delivered, and recorded in the Public Records.\nCommitment No. SYN-B-0707    Page 2 of 4\n</page>\n<page n=\"3\">\nCommitment No. SYN-B-0707    SCHEDULE B, PART II - EXCEPTIONS\n1. Any defect, lien, encumbrance, adverse claim, or other matter that appears for the first time in the Public Records or is created, attaches, or is disclosed between the Commitment Date and the date on which all of the Schedule B, Part I-Requirements are met.\n2. Rights or claims of parties in possession not shown by the Public Records.\n3. Easements, or claims of easements, not shown by the Public Records.\n4. Any lien, or right to a lien, for services, labor or material heretofore or hereafter furnished, imposed by law and not shown by the Public Records.\n5. Taxes or special assessments that are not shown as existing liens by the Public Records.\n6. General and special taxes and assessments for the fiscal year 2026-2027, a lien not yet due or payable.\nCommitment No. SYN-B-0707    Page 3 of 4\n</page>\n<page n=\"4\">\nCommitment No. SYN-B-0707    SCHEDULE B, PART II - EXCEPTIONS (continued)\n7. Easement in favor of Synthetic Power and Light Co. for underground utilities, recorded June 2, 1987 as Document No. 1987-0042210.\n8. A Deed of Trust and Assignment of Rents to secure an original principal amount of $412,000.00, dated February 26, 2021,\n   recorded March 3, 2021 as Document No. 2021-0123456 of Official Records.\n   Trustor: Pat Sample and Lee Sample. Beneficiary: Quillfeather Home Loans LLC.\n9. A Deed of Trust and Assignment of Rents\n   (Revolving Line of Credit) to secure an original principal amount of $60,000.00, dated July 11, 2023,\n   recorded July 18, 2023 as Document No. 2023-0456789 of Official Records.\n   Trustor: Pat Sample and Lee Sample. Beneficiary: Bramblecrest Federal Credit Union.\n10. Covenants, conditions and restrictions recorded May 14, 1986 as Document No. 1986-0031177.\nEND OF SCHEDULE B, PART II\nThis page is only a part of a 2021 ALTA Commitment for Title Insurance (synthetic).\nCommitment No. SYN-B-0707    Page 4 of 4\n</page>\n</document>\n<document id=\"first-statement\">\n<page n=\"5\">\nSYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.\nMONTHLY MORTGAGE STATEMENT\nServicer: Quillfeather Home Loans LLC\nStatement Date: 10/15/2026\nOriginal Principal: $412,000.00\nOutstanding Principal Balance: $371,218.40\nPage 1 of 1\n</page>\n</document>\n<document id=\"line-statement\">\n<page n=\"6\">\nSYNTHETIC TEST DOCUMENT. Every name, address and number here is invented.\nLINE OF CREDIT STATEMENT\nServicer: Bramblecrest Federal Credit Union\nStatement Date: 10/12/2026\nCredit Limit: $60,000.00\nPrincipal Balance: $41,300.00\nPage 1 of 1\n</page>\n</document>"
+      }
+    ]
+  },
+  "response": {
+    "id": "msg_simulated_claude-json_alta-07",
+    "type": "message",
+    "role": "assistant",
+    "model": "claude-opus-5-5",
+    "content": [
+      {
+        "type": "thinking",
+        "thinking": "",
+        "signature": "simulated"
+      },
+      {
+        "type": "text",
+        "text": "{\"reports\":[{\"doc\":\"commitment\",\"effective\":{\"value\":\"2026-10-12\",\"doc\":\"commitment\",\"page\":1,\"quote\":\"Commitment Date: October 12, 2026\"},\"items\":[{\"number\":1,\"kind\":{\"value\":\"other\",\"doc\":\"commitment\",\"page\":3,\"quote\":\"1. Any defect, lien, encumbrance, adverse claim, or other matter that appears for the first time in the Public Records or is created, attaches, or is disclosed between the Commitment Date and the date on which all of the Schedule B, Part I-Requirements are met.\"},\"recorded\":null,\"instrument\":null,\"amount\":null,\"holder\":null},{\"number\":2,\"kind\":{\"value\":\"other\",\"doc\":\"commitment\",\"page\":3,\"quote\":\"2. Rights or claims of parties in possession not shown by the Public Records.\"},\"recorded\":null,\"instrument\":null,\"amount\":null,\"holder\":null},{\"number\":3,\"kind\":{\"value\":\"other\",\"doc\":\"commitment\",\"page\":3,\"quote\":\"3. Easements, or claims of easements, not shown by the Public Records.\"},\"recorded\":null,\"instrument\":null,\"amount\":null,\"holder\":null},{\"number\":4,\"kind\":{\"value\":\"other\",\"doc\":\"commitment\",\"page\":3,\"quote\":\"4. Any lien, or right to a lien, for services, labor or material heretofore or hereafter furnished, imposed by law and not shown by the Public Records.\"},\"recorded\":null,\"instrument\":null,\"amount\":null,\"holder\":null},{\"number\":5,\"kind\":{\"value\":\"other\",\"doc\":\"commitment\",\"page\":3,\"quote\":\"5. Taxes or special assessments that are not shown as existing liens by the Public Records.\"},\"recorded\":null,\"instrument\":null,\"amount\":null,\"holder\":null},{\"number\":6,\"kind\":{\"value\":\"property-taxes\",\"doc\":\"commitment\",\"page\":3,\"quote\":\"6. General and special taxes and assessments for the fiscal year 2026-2027, a lien not yet due or payable.\"},\"recorded\":null,\"instrument\":null,\"amount\":null,\"holder\":null},{\"number\":7,\"kind\":{\"value\":\"other\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"7. Easement in favor of Synthetic Power and Light Co. for underground utilities, recorded June 2, 1987 as Document No. 1987-0042210.\"},\"recorded\":{\"value\":\"1987-06-02\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"recorded June 2, 1987\"},\"instrument\":{\"value\":\"1987-0042210\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"Document No. 1987-0042210\"},\"amount\":null,\"holder\":null},{\"number\":8,\"kind\":{\"value\":\"deed-of-trust\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"8. A Deed of Trust and Assignment of Rents to secure an original principal amount of $412,000.00, dated February 26, 2021, recorded March 3, 2021 as Document No. 2021-0123456 of Official Records. Trustor: Pat Sample and Lee Sample. Beneficiary: Quillfeather Home Loans LLC.\"},\"recorded\":{\"value\":\"2021-03-03\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"recorded March 3, 2021\"},\"instrument\":{\"value\":\"2021-0123456\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"Document No. 2021-0123456\"},\"amount\":{\"value\":412000,\"doc\":\"commitment\",\"page\":4,\"quote\":\"amount of $412,000.00\"},\"holder\":{\"value\":\"Quillfeather Home Loans LLC\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"Beneficiary: Quillfeather Home Loans LLC\"}},{\"number\":9,\"kind\":{\"value\":\"credit-line-deed-of-trust\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"9. A Deed of Trust and Assignment of Rents (Revolving Line of Credit) to secure an original principal amount of $60,000.00, dated July 11, 2023, recorded July 18, 2023 as Document No. 2023-0456789 of Official Records. Trustor: Pat Sample and Lee Sample. Beneficiary: Bramblecrest Federal Credit Union.\"},\"recorded\":{\"value\":\"2023-07-18\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"recorded July 18, 2023\"},\"instrument\":{\"value\":\"2023-0456789\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"Document No. 2023-0456789\"},\"amount\":{\"value\":60000,\"doc\":\"commitment\",\"page\":4,\"quote\":\"amount of $60,000.00\"},\"holder\":{\"value\":\"Bramblecrest FCU\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"Beneficiary: Bramblecrest FCU\"}},{\"number\":10,\"kind\":{\"value\":\"other\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"10. Covenants, conditions and restrictions recorded May 14, 1986 as Document No. 1986-0031177.\"},\"recorded\":{\"value\":\"1986-05-14\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"recorded May 14, 1986\"},\"instrument\":{\"value\":\"1986-0031177\",\"doc\":\"commitment\",\"page\":4,\"quote\":\"Document No. 1986-0031177\"},\"amount\":null,\"holder\":null}]}],\"statements\":[{\"doc\":\"first-statement\",\"date\":{\"value\":\"2026-10-15\",\"doc\":\"first-statement\",\"page\":5,\"quote\":\"Statement Date: 10/15/2026\"},\"original\":{\"value\":412000,\"doc\":\"first-statement\",\"page\":5,\"quote\":\"Original Principal: $412,000.00\"},\"balance\":{\"value\":371218.4,\"doc\":\"first-statement\",\"page\":5,\"quote\":\"Outstanding Principal Balance: $371,218.40\"}},{\"doc\":\"line-statement\",\"date\":{\"value\":\"2026-10-12\",\"doc\":\"line-statement\",\"page\":6,\"quote\":\"Statement Date: 10/12/2026\"},\"original\":{\"value\":60000,\"doc\":\"line-statement\",\"page\":6,\"quote\":\"Credit Limit: $60,000.00\"},\"balance\":{\"value\":41300,\"doc\":\"line-statement\",\"page\":6,\"quote\":\"Principal Balance: $41,300.00\"}}]}"
+      }
+    ],
+    "stop_reason": "end_turn",
+    "stop_sequence": null,
+    "usage": {
+      "input_tokens": 0,
+      "output_tokens": 0
+    }
+  }
+}

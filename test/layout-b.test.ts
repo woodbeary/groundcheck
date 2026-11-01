@@ -58,7 +58,7 @@ describe("layout B: ALTA-style commitments from a second generator", () => {
     const borrows: TitleReader = () =>
       fromProposals(g.ideal.map((i) => (i.doc === "commitment" && i.field === "item 5 kind" ? { ...i, page: partI.n, value: "deed-of-trust", quote: requirement5 } : i)));
     const r = lienstack(file, borrows);
-    assert.match(r.claims.find((c) => c.field === "item 5 kind")?.reason ?? "", /prints no item 5/);
+    assert.match(r.claims.find((c) => c.field === "item 5 kind")?.reason ?? "", /cites page 2, not page 3/);
     assert.notEqual(r.verdict, "pass");
   });
 
